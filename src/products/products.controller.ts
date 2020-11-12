@@ -1,62 +1,59 @@
 import { Controller, Get, Post, Param, Put, Delete, Res, Body, HttpStatus, Module, Injectable} from '@nestjs/common';
-import { ProductsService } from './products.service';
 import { Response } from 'express';
 import { UpdateProductDTO } from './dto/update-product.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { Neo4jController } from '../neo4j/neo4j.controller'
-import { Neo4jService } from 'src/neo4j/neo4j.service';
-import { Neo4jModule } from 'src/neo4j/neo4j.module';
+import { Neo4jService } from 'nest-neo4j'
+import { ProductsService } from './products.service';
+import { CreateProductDTO } from './dto/create-product.dto';
 
-// @Injectable()
-// @Module({
-//       providers:[Neo4jService]
-// })
+
 @ApiTags('products')
 @Controller('products')
 export class ProductsController {
-    // constructor(private neo4jService: Neo4jService) {}
-    @Get()
-    findAll(): number{
-        // console.log('sd')
+    constructor(
+        private readonly productService: ProductsService,
+        private readonly neo4jService: Neo4jService
+        ) {}
         
-        return 1;
-    }
-    @Get('neo4j')
-    async getHello(): Promise<any> {
-        // const a = this.neo4jService.g()
-        // const res = await this.neo4jService.read(`MATCH (n) RETURN count(n) AS count`)
-        return ` nodes in the database`
+    @Get()
+    getAll(){
+        return this.productService.findAll()
     }
 
     @Get()
-    findDisponible(): string{
-        return 'todos disponíveis';
+    getDisponible(){
+        return this.productService.findDisponible();
     }
 
     @Get(':target')
-    findByTarget(@Param('target') target): string{
-        return 'todos por tagetas';
+    getByTarget(@Param('target') target): string{
+        
+        return this.productService.findDisponible();
     }
 
     @Get(':id')
-    findById(@Param() params): string{
-        console.log(params.id)
-        return 'todos pelo id';
+    getById(@Param() params){
+        return this.productService.findById();
     }
 
     @Post()
-    create(@Res() res: Response){
-        res.status(HttpStatus.CREATED).send();
+    async post(@Body() createProduct:CreateProductDTO){
+        const product = await this.productService.create(
+            createProduct.product.name,
+            createProduct.product.cotation,
+            createProduct.product.image
+        )
+        return product.toJson()
     }
 
     @Put(':id')
     update(@Param('id') id: string, @Body() updateProductDTO: UpdateProductDTO) {
-        return `This action updates a #${id} cat`;
+        return this.productService.edit();
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return `This action removes a #${id} cat`;
+    delete(@Param('id') id: string) {
+        return this.productService.remove();
     }
 }
 
