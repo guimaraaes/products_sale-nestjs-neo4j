@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Param, Put, Delete, Res, Body, HttpStatus, Module, Injectable} from '@nestjs/common';
 import { Response } from 'express';
-import { UpdateProductDTO } from './dto/update-product.dto';
+import { UpdateProductDTO } from './dto/product.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Neo4jService } from 'nest-neo4j'
 import { ProductsService } from './products.service';
-import { CreateProductDTO } from './dto/create-product.dto';
+import { CreateProductDTO } from './dto/product.dto';
 
 
 @ApiTags('products')

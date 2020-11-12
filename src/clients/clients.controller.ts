@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Post, HttpStatus, Res, Put, Body } from '@nestjs/common';
 import { ClientsService } from './clients.service';
 import { Response } from 'express';
-import { UpdateClientDTO } from './dto/update-client.dto';
+import { UpdateClientDTO } from './dto/client.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('clients')

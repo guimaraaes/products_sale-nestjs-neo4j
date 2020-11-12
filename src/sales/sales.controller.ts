@@ -2,7 +2,7 @@ import { Controller, Get, Res, Delete, Put, Body, HttpStatus, Param, Post} from 
 import { ApiTags } from '@nestjs/swagger';
 import { SalesService } from './sales.service';
 import { Response } from 'express';
-import { CreateSaleDTO } from './dto/create-sale.dto';
+import { CreateSaleDTO } from './dto/sale.dto';
 
 @ApiTags('sales')
 @Controller('sales')
