@@ -15,9 +15,10 @@ export class ProductsService {
     
     async findAll(): Promise<any> {
         return await this.neo4jService.read(`
-        MATCH (n:Product)
-        RETURN n, n.name as name, n.cotation as cotation, 
-        n.image as image
+            MATCH (n:Product)
+            RETURN n, n.name as name, 
+                    n.cotation as cotation, 
+                    n.image as image
         `).then(res => {
             const products = res.records.map(row => {
                 return new Product(
@@ -42,15 +43,15 @@ export class ProductsService {
         return 'ainda em teste';
     }
 
-    async findById(id: number){
+    async findById(idProduct: number){
         return await this.neo4jService.read(`
             MATCH (n:Product)
-            WHERE id(n)=toInteger($p.id)
+            WHERE id(n)=toInteger($id_product)
             RETURN n, n.name as name,
                     n.cotation as cotation,
                     n.image as image
         `, { 
-            p: {id}
+            id_product: idProduct
         }).then(res => {
             const clients = res.records.map(row => {
                 return new Product(
@@ -67,15 +68,18 @@ export class ProductsService {
         })
     }
 
-    async create(product: ProductDTO): Promise<Product>{
+    async create(product: ProductDTO, idStoke: number): Promise<Product>{
         return await this.neo4jService.write(`
-            MERGE (n:Product 
-            {name: $p.name, cotation: $p.cotation, image: $p.image})
-            RETURN n, n.name as name,
-            n.cotation as cotation,
-            n.image as image
+            MERGE (p:Product 
+                        {name: $product_proper.name, quantity: $product_proper.quantity, 
+                        quantity_disponible: $product_proper.quantity_disponible, 
+                        price: $product_proper.price})<-[HAS_PRODUCT]-(s:Stoke)
+            WHERE id(s) = toInteger($id_stoke)
+            RETURN p, p.name as name,
+                    p.cotation as cotation,
+                    p.image as image
         `, {
-            p: product
+            product_proper: product, id_stoke:idStoke
         })
         .then(res => {
             const row = res.records[0]
@@ -91,16 +95,17 @@ export class ProductsService {
         });        
     }
 
-    async edit(id: number, product: ProductDTO){
+    async edit(idProduct: number, product: ProductDTO){
         return await this.neo4jService.write(`
-            MERGE (n:Product)
-            WHERE id(n)=toInteger($_p.id)
+            MATCH (n:Product)
+            WHERE id(n)=toInteger($id_product)
+            SET n.quantity = n.quantity + $product_proper.quantity,
+                n.quantity_disponible = n.quantity_disponible + $product_proper.quantity_disponible
             RETURN n, n.name as name,
                     n.cotation as cotation,
                     n.image as image
         `, {
-            _p: {id},
-            p: product
+            product_proper: product, id_product:idProduct
         }).then(res => {
             const row = res.records[0]
             return new Product(

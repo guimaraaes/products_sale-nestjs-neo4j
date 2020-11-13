@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Client } from './entity/client.entity';
 import { Neo4jService } from 'nest-neo4j';
+import { ClientDTO } from './dto/client.dto';
 
 @Injectable()
 export class ClientsService {
@@ -11,8 +12,9 @@ export class ClientsService {
     async findAll(): Promise<any>{
         return await this.neo4jService.read(`
             MATCH (n:Client)
-            RETURN n, n.name as name, n.cpf as cpf, 
-            n.adress as adress
+            RETURN n, n.name as name, 
+                    n.cpf as cpf, 
+                    n.adress as adress
         `).then(res => {
             const clients = res.records.map(row => {
                 return new Client(
@@ -26,21 +28,17 @@ export class ClientsService {
             })
             return clients.map(a => a.toJson())
         })
- 
     }
 
-    findByTarget(){
-
-    }
-
-    async findById(id: number): Promise<any>{
+    async findById(idClient: number): Promise<any>{
         return await this.neo4jService.read(`
             MATCH (n:Client)
-            WHERE id(n)=toInteger($p.id)
-            RETURN n, n.name as name, n.cpf as cpf, 
-            n.adress as adress
+            WHERE id(n)=toInteger($id_client)
+            RETURN n, n.name as name, 
+                    n.cpf as cpf, 
+                    n.adress as adress
         `, { 
-            p: {id}
+            id_client: idClient
         }).then(res => {
             const clients = res.records.map(row => {
                 return new Client(
@@ -57,14 +55,14 @@ export class ClientsService {
  
     }
     s
-    async create(name: string, cpf: string, adress:string): Promise<Client>{
+    async create(client:ClientDTO): Promise<Client>{
         const response = await this.neo4jService.write(`
-            MERGE (n:Client 
-            {name: $p.name, cpf: $p.cpf, adress: $p.adress})
-            RETURN n, n.name as name, n.cpf as cpf,
-            n.adress as adress
+            MERGE (n:Client {name: $client_proper.name, cpf: $client_proper.cpf, adress: $client_proper.adress})
+            RETURN n, n.name as name, 
+                    n.cpf as cpf,
+                    n.adress as adress
         `, {
-            p: {name, cpf, adress}
+            client_proper: client
         })
         .then(res => {
             const row = res.records[0]
@@ -81,14 +79,16 @@ export class ClientsService {
 
     }
 
-    async edit(id: number, name: string, cpf: string, adress: string): Promise<any>{
+    async edit(idProduct: number, product:ClientDTO): Promise<any>{
         return await this.neo4jService.read(`
             MATCH (n:Client)
-            WHERE id(n)=toInteger($p.id)
-            RETURN n, n.name as name, n.cpf as cpf, 
-            n.adress as adress
+            WHERE id(n)=toInteger($id_product)
+            SET n.adress = $product_proper.adress
+            RETURN n, n.name as name, 
+                    n.cpf as cpf, 
+                    n.adress as adress
         `, { 
-            p: {id}
+            product_proper: product, id_product: idProduct
         }).then(res => {
             const clients = res.records.map(row => {
                 return new Client(

@@ -16,9 +16,10 @@ export class SalesService {
     async findAll(): Promise<any>{
         return await this.neo4jService.read(`
             MATCH (n:Sale)
-            RETURN n, n.total_sale as total_sale, 
-            n.type_payment as type_payment, 
-            n.quantity_parcels as quantity_parcels
+            RETURN n, n.type_payment as type_payment, 
+                    n.quantity_parcels as quantity_parcels, 
+                    n.total_sale as total_sale, 
+                    n.quantity_sale as quantity_sale
         `).then(res => {
             const products = res.records.map(row => {
                 return new Sale(
@@ -44,15 +45,16 @@ export class SalesService {
         return 'ainda em teste';
     }
 
-    async findById(id: number){
+    async findById(idSale: number){
         return await this.neo4jService.read(`
             MATCH (n:Sale)
-            WHERE id(n)=toInteger($p.id)
-            RETURN n, n.total_sale as total_sale,
-                    n.type_payment as type_payment,
-                    n.quantity_parcels as quantity_parcels
+            WHERE id(n)=toInteger($id_sale)
+            RETURN n, n.type_payment as type_payment, 
+                    n.quantity_parcels as quantity_parcels, 
+                    n.total_sale as total_sale, 
+                    n.quantity_sale as quantity_sale
         `, { 
-            p: {id}
+            id_sale: idSale
         }).then(res => {
             const clients = res.records.map(row => {
                 return new Sale(
@@ -70,19 +72,25 @@ export class SalesService {
  
     }
     //n2.total_sale
+    //[:HAS_SALE_PRODUCT {quantity: $sale.proper.total_sale}]
     async create(sale:SaleDTO, idProduct: number, idClient: number): Promise<any>{
         return await this.neo4jService.write(`
-             MERGE  (n:Sale 
+            MATCH (c:Client)
+            WHERE id(c) = toInteger($id_client)
+            MERGE (c)-[rel:HAS_SALE_PRODUCT]->(p:Product)
+            SET rel.quantity = rel.quantity + $sale_proper.total_sale
+            WITH c
+            CREATE (n:Sale 
                         {total_sale: $sale_proper.total_sale, type_payment: $sale_proper.type_payment, 
                         quantity_parcels: $sale_proper.quantity_parcels})
-                    -[:HAS_SALE_PRODUCT]->
-                    (n2:Product)
-            SET n2.quantity_disponible = toInteger($id_prod) + 1
+                    -[:FROM_PRODUCT]->(n2:Product), (n)-[:FROM_CLIENT]->(c)
+            WHERE id(n2) = toInteger($id_product)
+            SET n2.quantity_disponible = n2.quantity_disponible - toInteger($sale_proper.quantity_sale)
             RETURN n, n2, n.total_sale as total_sale,
                     n.type_payment as type_payment,
                     n.quantity_parcels as quantity_parcels
         `, {
-            sale_proper: sale, id_prod: idProduct
+            sale_proper: sale, id_product: idProduct, id_client: idClient
             
         })
         .then(res => {

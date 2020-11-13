@@ -15,16 +15,6 @@ export class SalesController {
         return this.saleService.findAll()
     }
 
-    @Get()
-    getDisponible(){
-        return this.saleService.findAll()
-    }
-
-    @Get('/search_by_target/:target')
-    getByTarget(@Param('target') target){
-        return this.saleService.findAll()
-    }
-
     @Get(':id')
     getById(@Param('id') id:number ){
         return this.saleService.findById(id)
