@@ -3,6 +3,7 @@ import { REQUEST } from '@nestjs/core';
 import { Neo4jService } from 'nest-neo4j';
 import { Request } from 'express';
 import { Product } from './entity/product.entity';
+import { ProductDTO } from './dto/product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -11,9 +12,23 @@ export class ProductsService {
         private readonly request:Request,
         private readonly neo4jService: Neo4jService
     ) {}
+    
     async findAll(): Promise<any> {
-        const res = await this.neo4jService.read(`MATCH (n) RETURN count(n) AS count`)
-        return `There are ${res.records[0].get('count')} nodes in the database`
+        return await this.neo4jService.read(`
+        MATCH (n:Product)
+        RETURN n, n.name as name, n.cotation as cotation, 
+        n.image as image
+        `).then(res => {
+            const products = res.records.map(row => {
+                return new Product(
+                    row.get('n'),
+                    row.get('name'),
+                    row.get('cotation'), 
+                    row.get('image')
+                )
+            })
+            return products.map(a => a.toJson())
+        })
     }
 
     findDisponible(){
@@ -24,19 +39,37 @@ export class ProductsService {
         return 'ainda em teste';
     }
 
-    findById(){
-        return 'ainda em teste';
+    async findById(id: number){
+        return await this.neo4jService.read(`
+            MATCH (n:Product)
+            WHERE id(n)=toInteger($p.id)
+            RETURN n, n.name as name,
+                    n.cotation as cotation,
+                    n.image as image
+        `, { 
+            p: {id}
+        }).then(res => {
+            const clients = res.records.map(row => {
+                return new Product(
+                    row.get('n'),
+                    row.get('name'),
+                    row.get('cotation'), 
+                    row.get('image')
+                )
+            })
+            return clients.map(a => a.toJson())
+        })
     }
 
-      create(name: string, cotation: number, image: string): Promise<Product>{
-        const response =   this.neo4jService.write(`
+    async create(product: ProductDTO): Promise<Product>{
+        return await this.neo4jService.write(`
             MERGE (n:Product 
             {name: $p.name, cotation: $p.cotation, image: $p.image})
             RETURN n, n.name as name,
             n.cotation as cotation,
             n.image as image
         `, {
-            p: {name, cotation, image}
+            p: product
         })
         .then(res => {
             const row = res.records[0]
@@ -46,14 +79,28 @@ export class ProductsService {
                 row.get('cotation'),
                 row.get('image')
             )
-        })
-        ;
-        return response
-        
+        });        
     }
 
-    edit(){
-        return 'ainda em teste';
+    async edit(id: number, product: ProductDTO){
+        return await this.neo4jService.write(`
+            MERGE (n:Product)
+            WHERE id(n)=toInteger($_p.id)
+            RETURN n, n.name as name,
+                    n.cotation as cotation,
+                    n.image as image
+        `, {
+            _p: {id},
+            p: product
+        }).then(res => {
+            const row = res.records[0]
+            return new Product(
+                row.get('n'),
+                row.get('name'),
+                row.get('cotation'),
+                row.get('image')
+            )
+        });
     }
 
     remove(){

@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Param, Put, Delete, Res, Body, HttpStatus, Module, Injectable} from '@nestjs/common';
-import { Response } from 'express';
-import { UpdateProductDTO } from './dto/product.dto';
+// import { Response } from 'express';
+import { ProductDTO } from './dto/product.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { Neo4jService } from 'nest-neo4j'
+// import { Neo4jService } from 'nest-neo4j'
 import { ProductsService } from './products.service';
-import { CreateProductDTO } from './dto/product.dto';
+// import { CreateProductDTO } from './dto/product.dto';
 
 
 @ApiTags('products')
@@ -12,8 +12,7 @@ import { CreateProductDTO } from './dto/product.dto';
 export class ProductsController {
     constructor(
         private readonly productService: ProductsService,
-        private readonly neo4jService: Neo4jService
-        ) {}
+    ) {}
         
     @Get()
     getAll(){
@@ -25,30 +24,25 @@ export class ProductsController {
         return this.productService.findDisponible();
     }
 
-    @Get(':target')
+    @Get('/search_by_target/:target')
     getByTarget(@Param('target') target): string{
-        
         return this.productService.findDisponible();
     }
 
     @Get(':id')
-    getById(@Param() params){
-        return this.productService.findById();
+    getById(@Param('id') id){
+        return this.productService.findById(id);
     }
 
     @Post()
-    async post(@Body() createProduct:CreateProductDTO){
-        const product = await this.productService.create(
-            createProduct.product.name,
-            createProduct.product.cotation,
-            createProduct.product.image
-        )
-        return product.toJson()
+    post(@Body() createProduct:ProductDTO){
+        const product = this.productService.create(createProduct)
+        return product
     }
 
     @Put(':id')
-    update(@Param('id') id: string, @Body() updateProductDTO: UpdateProductDTO) {
-        return this.productService.edit();
+    put(@Param('id') id, @Body() product: ProductDTO) {
+        return this.productService.edit(id, product);
     }
 
     @Delete(':id')

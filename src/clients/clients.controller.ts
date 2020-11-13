@@ -1,37 +1,49 @@
 import { Controller, Get, Param, Post, HttpStatus, Res, Put, Body } from '@nestjs/common';
 import { ClientsService } from './clients.service';
-import { Response } from 'express';
-import { UpdateClientDTO } from './dto/client.dto';
+// import { Response } from 'express';
+import { ClientDTO } from './dto/client.dto';
 import { ApiTags } from '@nestjs/swagger';
+// import { runInThisContext } from 'vm';
 
 @ApiTags('clients')
 @Controller('clients')
 export class ClientsController {
-    constructor(private clientsService: ClientsService) {}
+    constructor(
+        private readonly clientsService: ClientsService
+        ) {}
  
     @Get()
-    findAll(): string{
-        return 'todos';
+    getAll(){
+        return this.clientsService.findAll();
     }
 
-    @Get(':target')
-    findByTarget(@Param('target') target): string{
-        return 'por targetas'
+    @Get('/getsales/')
+    getAllSales(@Param('target') target){
+        return this.clientsService.findByTarget();
+    }
+
+    @Get('getsales/:product')
+    getSaleByProduct(@Param('product') product){
+        return this.clientsService.findByTarget();
     }
 
     @Get(':id')
-    findById(@Param() params): string{
-
-        return 'encontrar pelo id'
+    getById(@Param('id') id: number){
+        return this.clientsService.findById(id)
     }
 
     @Post()
-    create(@Res() res: Response){
-        res.status(HttpStatus.CREATED).send();
+    post(@Body() createClient: ClientDTO){
+        const response = this.clientsService.create(
+            createClient.name,
+            createClient.cpf,
+            createClient.adress
+        )
+        return response
     }
 
     @Put(':id')
-    update(@Param('id') id: string, @Body() updateClientDTO: UpdateClientDTO){
+    put(@Param('id') id: string, @Body() updateClientDTO: ClientDTO){
 
     }
 

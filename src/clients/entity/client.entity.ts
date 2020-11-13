@@ -9,16 +9,16 @@ export class Client {
         // private readonly product: Product,
 
         private readonly name: string,
-        private readonly mean_time_to_pay: string,
-        private readonly image: string,
+        private readonly cpf: string,
+        private readonly adress: string,
     ) {}
 
     toJson(): Record<string, any> {
         return {
             ...this.client.properties,
             name: this.name,
-            mean_time_to_pay: this.mean_time_to_pay,
-            image: this.image,
+            cpf: this.cpf,
+            adress: this.adress,
             // sale: this.sale.toJson(),
             // product: this.product.toJson(),
             // tagList: this.tagList.map(tag => tag.toJson()),

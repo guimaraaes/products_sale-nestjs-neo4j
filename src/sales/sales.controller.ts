@@ -2,47 +2,50 @@ import { Controller, Get, Res, Delete, Put, Body, HttpStatus, Param, Post} from 
 import { ApiTags } from '@nestjs/swagger';
 import { SalesService } from './sales.service';
 import { Response } from 'express';
-import { CreateSaleDTO } from './dto/sale.dto';
+import { SaleDTO } from './dto/sale.dto';
+import { runInThisContext } from 'vm';
 
 @ApiTags('sales')
 @Controller('sales')
 export class SalesController {
+    constructor(
+        private readonly saleService: SalesService
+    ) {}
 
-    constructor(private productsService: SalesService) {}
     @Get()
-    findAll(): string{
-        return 'todos';
+    getAll(){
+        return this.saleService.findAll()
     }
 
     @Get()
-    findDisponible(): string{
-        return 'todos disponíveis';
+    getDisponible(){
+        return this.saleService.findAll()
     }
 
-    @Get(':target')
-    findByTarget(@Param('target') target): string{
-        return 'todos por tagetas';
+    @Get('/search_by_target/:target')
+    getByTarget(@Param('target') target){
+        return this.saleService.findAll()
     }
 
     @Get(':id')
-    findById(@Param() params): string{
-        console.log(params.id)
-        return 'todos pelo id';
+    getById(@Param('id') id:number ){
+        return this.saleService.findById(id)
     }
 
     @Post()
-    create(@Res() res: Response, @Body() createSaleDTO: CreateSaleDTO){
-        res.status(HttpStatus.CREATED).send();
+    post(@Body() createSaleDTO: SaleDTO){
+        const response = this.saleService.create(createSaleDTO)
+        return response
     }
 
     @Put(':id')
-    update(@Param('id') id: string) {
-        return `This action updates a #${id} cat`;
+    put(@Param('id') id: string ) {
+        return this.saleService.findAll()
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return `This action removes a #${id} cat`;
+    delete(@Param('id') id: string ) {
+        return this.saleService.findAll()
     }
 
 }

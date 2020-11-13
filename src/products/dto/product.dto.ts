@@ -1,20 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, ValidateNested, IsObject } from "class-validator";
+import { ValidateNested, IsObject } from "class-validator";
 import { Type } from 'class-transformer';
-import { Product} from '../interface/product.interface'
+// import { Product} from '../interface/product.interface'
 
-export class CreateProductDTO{
+// export class CreateProductDTO{
+//     @IsObject()
+//     @ValidateNested()
+//     @Type(() => Product)
+//     @ApiProperty()
+//     product: Product
+// }
+
+export class ProductDTO{
     @IsObject()
     @ValidateNested()
-    @Type(() => Product)
+    // @Type(() => Product)
     @ApiProperty()
-    product: Product
-}
-
-export class UpdateProductDTO{
-    @IsObject()
-    @ValidateNested()
-    @Type(() => Product)
+     name: string;
     @ApiProperty()
-    product: Product
+    cotation: number;
+    @ApiProperty()
+    image: string;
 }

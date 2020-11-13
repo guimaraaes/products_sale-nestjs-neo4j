@@ -2,19 +2,17 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, ValidateNested, IsObject } from "class-validator";
 import { Type } from 'class-transformer';
 
-import{ Sale } from '../interface/sales.interface'
-export class CreateSaleDTO {
+
+export class SaleDTO {
     @IsObject()
     @ValidateNested()
-    @Type(() => Sale)
+    // @Type(() => Sale)
     @ApiProperty()
-    sale: Sale
+    total_sale: string;
+    @ApiProperty()
+    type_payment: string;
+    @ApiProperty()
+    quantity_parcels: string;
 }
 
-export class UpdateProductDTO{
-    @IsObject()
-    @ValidateNested()
-    @Type(() => Sale)
-    @ApiProperty()
-    sale: Sale
-}
+
