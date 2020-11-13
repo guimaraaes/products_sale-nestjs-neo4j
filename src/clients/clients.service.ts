@@ -17,6 +17,8 @@ export class ClientsService {
             const clients = res.records.map(row => {
                 return new Client(
                     row.get('n'),
+                    null,
+                    null,
                     row.get('name'),
                     row.get('cpf'), 
                     row.get('adress')
@@ -43,6 +45,8 @@ export class ClientsService {
             const clients = res.records.map(row => {
                 return new Client(
                     row.get('n'),
+                    null,
+                    null,
                     row.get('name'),
                     row.get('cpf'), 
                     row.get('adress')
@@ -66,6 +70,8 @@ export class ClientsService {
             const row = res.records[0]
             return new Client(
                 row.get('n'),
+                null,
+                null,
                 row.get('name'),
                 row.get('cpf'),
                 row.get('adress')
@@ -87,6 +93,8 @@ export class ClientsService {
             const clients = res.records.map(row => {
                 return new Client(
                     row.get('n'),
+                    null,
+                    null,
                     row.get('name'),
                     row.get('cpf'), 
                     row.get('adress')

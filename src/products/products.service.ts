@@ -22,9 +22,12 @@ export class ProductsService {
             const products = res.records.map(row => {
                 return new Product(
                     row.get('n'),
+                    null, 
+                    null,
                     row.get('name'),
-                    row.get('cotation'), 
-                    row.get('image')
+                    row.get('quantity'),
+                    row.get('quantity_disponible'), 
+                    row.get('price')
                 )
             })
             return products.map(a => a.toJson())
@@ -52,9 +55,12 @@ export class ProductsService {
             const clients = res.records.map(row => {
                 return new Product(
                     row.get('n'),
+                    null, 
+                    null,
                     row.get('name'),
-                    row.get('cotation'), 
-                    row.get('image')
+                    row.get('quantity'),
+                    row.get('quantity_disponible'), 
+                    row.get('price')
                 )
             })
             return clients.map(a => a.toJson())
@@ -75,9 +81,12 @@ export class ProductsService {
             const row = res.records[0]
             return new Product(
                 row.get('n'),
+                null, 
+                null,
                 row.get('name'),
-                row.get('cotation'),
-                row.get('image')
+                row.get('quantity'),
+                row.get('quantity_disponible'), 
+                row.get('price')
             )
         });        
     }
@@ -96,9 +105,12 @@ export class ProductsService {
             const row = res.records[0]
             return new Product(
                 row.get('n'),
+                null, 
+                null,
                 row.get('name'),
-                row.get('cotation'),
-                row.get('image')
+                row.get('quantity'),
+                row.get('quantity_disponible'), 
+                row.get('price')
             )
         });
     }

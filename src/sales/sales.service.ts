@@ -23,14 +23,19 @@ export class SalesService {
             const products = res.records.map(row => {
                 return new Sale(
                     row.get('n'),
-                    row.get('total_sale'),
+                    null,
+                    null,
                     row.get('type_payment'),
-                    row.get('quantity_parcels')
+                    row.get('quantity_parcels'),
+                    row.get('total_sale'),
+                    row.get('quantity_sale')
+                    
                 )
             })
-            return products.map(a => a.toJson())
+            return products.map(a => a)
         })
     }
+    
     findDisponible(){
         return 'ainda em teste';
     }
@@ -51,35 +56,45 @@ export class SalesService {
         }).then(res => {
             const clients = res.records.map(row => {
                 return new Sale(
+                    null,
+                    null,
                     row.get('n'),
+                    row.get('type_payment'),
+                    row.get('quantity_parcels'),
                     row.get('total_sale'),
-                    row.get('type_payment'), 
-                    row.get('quantity_parcels')
+                    row.get('quantity_sale')
                 )
             })
             return clients.map(a => a.toJson())
         })
  
     }
-
-    async create(sale:SaleDTO): Promise<any>{
+    //n2.total_sale
+    async create(sale:SaleDTO, idProduct: number, idClient: number): Promise<any>{
         return await this.neo4jService.write(`
-            MERGE (n:Sale 
-                    {total_sale: $p.total_sale, type_payment: $p.type_payment, 
-                    quantity_parcels: $p.quantity_parcels})
-            RETURN n, n.total_sale as total_sale,
+             MERGE  (n:Sale 
+                        {total_sale: $sale_proper.total_sale, type_payment: $sale_proper.type_payment, 
+                        quantity_parcels: $sale_proper.quantity_parcels})
+                    -[:HAS_SALE_PRODUCT]->
+                    (n2:Product)
+            SET n2.quantity_disponible = toInteger($id_prod) + 1
+            RETURN n, n2, n.total_sale as total_sale,
                     n.type_payment as type_payment,
                     n.quantity_parcels as quantity_parcels
         `, {
-            p: sale
+            sale_proper: sale, id_prod: idProduct
+            
         })
         .then(res => {
             const row = res.records[0]
             return new Sale(
                 row.get('n'),
-                row.get('total_sale'),
+                null,
+                row.get('n2'),
                 row.get('type_payment'),
-                row.get('quantity_parcels')
+                row.get('quantity_parcels'),
+                row.get('total_sale'),
+                row.get('quantity_sale')
             )
         });
     }
@@ -94,14 +109,17 @@ export class SalesService {
                     n.quantity_parcels as quantity_parcels
         `, {
             _p: {id},
-            p: sale
+            p: {sale_proper: sale}
         }).then(res => {
             const row = res.records[0]
             return new Sale(
                 row.get('n'),
-                row.get('total_sale'),
+                null,
+                null,
                 row.get('type_payment'),
-                row.get('quantity_parcels')
+                row.get('quantity_parcels'),
+                row.get('total_sale'),
+                row.get('quantity_sale')
             )
         });
     }

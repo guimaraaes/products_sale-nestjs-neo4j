@@ -8,11 +8,14 @@ export class SaleDTO {
     @ValidateNested()
     // @Type(() => Sale)
     @ApiProperty()
-    total_sale: string;
-    @ApiProperty()
     type_payment: string;
     @ApiProperty()
-    quantity_parcels: string;
+    quantity_parcels: number;
+    @ApiProperty()
+    total_sale: number;
+    @ApiProperty()
+    quantity_sale: number;
+
 }
 
 

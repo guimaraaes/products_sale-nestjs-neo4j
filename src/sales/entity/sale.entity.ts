@@ -1,26 +1,28 @@
 import { Node } from 'neo4j-driver'
-// import { Client } from '../../user/entity/client.entity'
-// import { Product } from './product.entity'
+import { Client } from 'src/clients/entity/client.entity'
+import { Product } from 'src/products/entity/product.entity'
 
 export class Sale {
     constructor(
         private readonly sale: Node,
-        // private readonly client: Client,
-        // private readonly sale: Product,
+        private readonly client: Client,
+        private readonly product: Product,
 
-        private readonly total_sale: string,
         private readonly type_payment: string,
-        private readonly quantity_parcels: string,
+        private readonly quantity_parcels: number,
+        private readonly total_sale: number,
+        private readonly quantity_sale: number
     ) {}
 
     toJson(): Record<string, any> {
         return {
             ...this.sale.properties,
-            total_sale: this.total_sale,
             type_payment: this.type_payment,
             quantity_parcels: this.quantity_parcels,
-            // client: this.client.toJson(),
-            // sale: this.sale.toJson(),
+            total_sale: this.total_sale,
+            quantity_sale: this.quantity_sale,
+            client: this.client.toJson(),
+            product: this.product.toJson(),
             // tagList: this.tagList.map(tag => tag.toJson()),
         }
     }
