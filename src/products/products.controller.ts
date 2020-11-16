@@ -1,7 +1,8 @@
 import { Controller, Get, Post, Param, Put, Delete, Body } from '@nestjs/common';
-import { ProductDTO } from './dto/product.dto';
+import { UpdateProduct, CreateProduct } from './dto/product.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ProductsService } from './products.service';
+import { Integer } from 'neo4j-driver';
 
 
 @ApiTags('products')
@@ -22,24 +23,24 @@ export class ProductsController {
     }
 
     @Get(':id')
-    getById(@Param('id') id){
+    getById(@Param('id') id: number){
         return this.productService.findById(id);
     }
 
-    @Post()
-    post(@Body() createProduct:ProductDTO, @Param('id_stoke') idStoke: number){
+    @Post(':id_stoke')
+    post(@Body() createProduct:CreateProduct, @Param('id_stoke') idStoke: number){
         const product = this.productService.create(createProduct, idStoke)
         return product
     }
 
     @Put(':id')
-    put(@Param('id') id, @Body() product: ProductDTO) {
+    put(@Body() product: UpdateProduct, @Param('id') id: number) {
         return this.productService.edit(id, product);
     }
 
     @Delete(':id')
-    delete(@Param('id') id: string) {
-        return this.productService.remove();
+    delete(@Param('id') id: number) {
+        return this.productService.remove(id);
     }
 }
 

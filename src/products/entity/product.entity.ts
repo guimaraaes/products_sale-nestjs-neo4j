@@ -5,8 +5,8 @@ import { Client } from 'src/clients/entity/client.entity'
 export class Product {
     constructor(
         private readonly product: Node,
-        private readonly client: Client,
-        private readonly sale: Sale,
+        // private readonly client: Client,
+        // private readonly sale: Sale,
         private readonly name: string,
         private readonly quantity: number,
         private readonly quantity_disponible: number,
@@ -22,8 +22,8 @@ export class Product {
             quantity: this.quantity,
             quantity_disponible: this.quantity_disponible,
             price: this.price,
-            client: this.client.toJson(),
-            sale: this.sale.toJson(),
+            // client: this.client.toJson(),
+            // sale: this.sale.toJson(),
             // tagList: this.tagList.map(tag => tag.toJson()),
         }
     }

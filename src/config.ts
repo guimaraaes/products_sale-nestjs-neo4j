@@ -1,5 +1,5 @@
-export const HOSTNAME = '54.210.123.126';
+export const HOSTNAME = '100.25.12.35';
 export const NEO4J_USER = 'neo4j';
-export const NEO4J_PASSWORD = 'rejections-splices-discrepancies';
+export const NEO4J_PASSWORD = 'vomit-oils-nails';
 export const SCHEMA = 'bolt';
-export const PORT = '33884';
+export const PORT = '32868';
