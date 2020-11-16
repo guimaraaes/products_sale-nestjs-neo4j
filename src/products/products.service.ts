@@ -123,13 +123,18 @@ export class ProductsService {
         return await this.neo4jService.write(`
             MATCH (s:Stoke) WHERE id(s) = toInteger($id_stoke)
             WITH s
-            MERGE (s)-[:HAS_PRODUCT]->(p:Product 
+            MERGE (s)-[hasp:HAS_PRODUCT]->(p:Product 
                                         {name: $product_proper.name,
                                         price: $product_proper.price})
             ON MATCH SET p.quantity_disponible = p.quantity_disponible + $product_proper.quantity,
-                            p.quantity = p.quantity + $product_proper.quantity
+                            p.quantity = p.quantity + $product_proper.quantity,
+                            hasp.quantity_disponible = p.quantity_disponible
+
             ON CREATE SET p.quantity_disponible = $product_proper.quantity, 
-                            p.quantity = $product_proper.quantity
+                            p.quantity = $product_proper.quantity,
+                            hasp.quantity_disponible = p.quantity_disponible,
+                            hasp.quantity_sale = 0,
+                            hasp.sales_count = 0
             RETURN p, p.name as name,
                     p.quantity as quantity,
                     p.quantity_disponible as quantity_disponible,

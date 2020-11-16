@@ -20,21 +20,15 @@ export class SalesController {
         return this.saleService.findById(id)
     }
 
+    @Delete(':id')
+    delete(@Param('id') id:number ) {
+        return this.saleService.remove(id)
+    }
+
     @Post(':id_product/:id_client')
     post(@Body() createSaleDTO: SaleDTO, 
     @Param('id_product') idProduct: number,
     @Param('id_client') idClient: number){
         return this.saleService.create(createSaleDTO, idProduct, idClient)
     }
-
-    @Put(':id')
-    put(@Param('id') id: string ) {
-        return this.saleService.findAll()
-    }
-
-    @Delete(':id')
-    delete(@Param('id') id: string ) {
-        return this.saleService.findAll()
-    }
-
 }
