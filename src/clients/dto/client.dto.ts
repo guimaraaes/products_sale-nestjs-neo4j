@@ -16,10 +16,25 @@ export class ClientDTO{
     adress: string;
 }
 
-// export class UpdateClientDTO{
-//     @IsObject()
-//     @ValidateNested()
-//     @Type(() => Client)
-//     @ApiProperty()
-//     product: Client
-// }
+
+export class CreateClient{
+    @IsObject()
+    @ValidateNested()
+    // @Type(() => Client)
+    @ApiProperty()
+    name: string;
+    @ApiProperty()
+    cpf: string;
+    @ApiProperty()
+    adress: string;
+}
+
+
+export class UpdateClient{
+    @IsObject()
+    @ValidateNested()
+    // @Type(() => Client)
+    @ApiProperty()
+    adress: string;
+}
+

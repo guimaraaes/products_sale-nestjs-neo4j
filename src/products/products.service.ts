@@ -4,7 +4,6 @@ import { Neo4jService } from 'nest-neo4j';
 import { Request } from 'express';
 import { Product } from './entity/product.entity';
 import { UpdateProduct, CreateProduct } from './dto/product.dto';
-import { Integer } from 'neo4j-driver';
 
 @Injectable()
 export class ProductsService {
@@ -85,38 +84,6 @@ export class ProductsService {
         })
     }
 
-    async create(product: CreateProduct, idStoke: number): Promise<any>{
-        return await this.neo4jService.write(`
-            MATCH (s:Stoke) WHERE id(s) = toInteger($id_stoke)
-            WITH s
-            MERGE (s)-[:HAS_PRODUCT]->(p:Product 
-                        {name: $product_proper.name,
-                        price: $product_proper.price})
-            ON MATCH SET p.quantity_disponible = p.quantity_disponible + $product_proper.quantity,
-                            p.quantity = p.quantity + $product_proper.quantity
-            ON CREATE SET p.quantity_disponible = $product_proper.quantity, 
-                            p.quantity = $product_proper.quantity
-            RETURN p, p.name as name,
-                    p.quantity as quantity,
-                    p.quantity_disponible as quantity_disponible,
-                    p.price as price
-        `, {
-            product_proper: product, id_stoke:idStoke
-        })
-        .then(res => {
-            const row = res.records[0]
-            return new Product(
-                row.get('p'),
-                // null, 
-                // null,
-                row.get('name'),
-                row.get('quantity'),
-                row.get('quantity_disponible'), 
-                row.get('price')
-            )
-        });        
-    }
-
     async edit(idProduct: number, product: UpdateProduct){
         return await this.neo4jService.write(`
             MATCH (p:Product)
@@ -152,6 +119,36 @@ export class ProductsService {
         })
     }
 
-
+    async create(product: CreateProduct, idStoke: number): Promise<any>{
+        return await this.neo4jService.write(`
+            MATCH (s:Stoke) WHERE id(s) = toInteger($id_stoke)
+            WITH s
+            MERGE (s)-[:HAS_PRODUCT]->(p:Product 
+                                        {name: $product_proper.name,
+                                        price: $product_proper.price})
+            ON MATCH SET p.quantity_disponible = p.quantity_disponible + $product_proper.quantity,
+                            p.quantity = p.quantity + $product_proper.quantity
+            ON CREATE SET p.quantity_disponible = $product_proper.quantity, 
+                            p.quantity = $product_proper.quantity
+            RETURN p, p.name as name,
+                    p.quantity as quantity,
+                    p.quantity_disponible as quantity_disponible,
+                    p.price as price
+        `, {
+            product_proper: product, id_stoke:idStoke
+        })
+        .then(res => {
+            const row = res.records[0]
+            return new Product(
+                row.get('p'),
+                // null, 
+                // null,
+                row.get('name'),
+                row.get('quantity'),
+                row.get('quantity_disponible'), 
+                row.get('price')
+            )
+        });        
+    }
 
 }

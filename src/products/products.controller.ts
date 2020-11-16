@@ -25,14 +25,8 @@ export class ProductsController {
     @Get(':id')
     getById(@Param('id') id: number){
         return this.productService.findById(id);
-    }
-
-    @Post(':id_stoke')
-    post(@Body() createProduct:CreateProduct, @Param('id_stoke') idStoke: number){
-        const product = this.productService.create(createProduct, idStoke)
-        return product
-    }
-
+    }    
+    
     @Put(':id')
     put(@Body() product: UpdateProduct, @Param('id') id: number) {
         return this.productService.edit(id, product);
@@ -41,6 +35,12 @@ export class ProductsController {
     @Delete(':id')
     delete(@Param('id') id: number) {
         return this.productService.remove(id);
+    }
+
+    @Post(':id_stoke')
+    post(@Body() createProduct:CreateProduct, @Param('id_stoke') idStoke: number){
+        const product = this.productService.create(createProduct, idStoke)
+        return product
     }
 }
 
