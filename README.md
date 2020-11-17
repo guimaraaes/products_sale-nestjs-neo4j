@@ -78,7 +78,7 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 API de gerenciamento de produtos, vendas e clientes em um estoque com NestJs e Neo4j.
 
 
-
+# VERSÕES
 ## Stoke, Product, Sale, Client v1
   ### Database
 - [x] Stoke
@@ -99,6 +99,7 @@ API de gerenciamento de produtos, vendas e clientes em um estoque com NestJs e N
 - [x] Verificar product indisponível
 <!-- - [ ] CONSTRAINTS nos nomes dos objetos -->
 - [x] Renomear as variáveis
+
 
 ## Staff e City v2
   ### Database

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Client } from './entity/client.entity';
+import { Client } from './entity/clients.entity';
 import { Neo4jService } from 'nest-neo4j';
-import {  UpdateClient, CreateClient } from './dto/client.dto';
+import {  UpdateClient, CreateClient } from './dto/clients.dto';
 
 @Injectable()
 export class ClientsService {

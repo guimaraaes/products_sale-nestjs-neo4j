@@ -2,8 +2,8 @@ import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Neo4jService } from 'nest-neo4j';
 import { Request } from 'express';
-import { Product } from './entity/product.entity';
-import { UpdateProduct, CreateProduct } from './dto/product.dto';
+import { Product } from './entity/products.entity';
+import { UpdateProduct, CreateProduct } from './dto/products.dto';
 
 @Injectable()
 export class ProductsService {

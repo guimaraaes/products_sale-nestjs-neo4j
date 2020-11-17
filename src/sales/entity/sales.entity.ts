@@ -1,6 +1,6 @@
 import { Node, DateTime } from 'neo4j-driver'
-import { Client } from 'src/clients/entity/client.entity'
-import { Product } from 'src/products/entity/product.entity'
+import { Client } from 'src/clients/entity/clients.entity'
+import { Product } from 'src/products/entity/products.entity'
 
 export class Sale {
     constructor(

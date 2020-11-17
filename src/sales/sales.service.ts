@@ -1,9 +1,9 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j'
 import { REQUEST } from '@nestjs/core';
-import { Sale } from './entity/sale.entity';
+import { Sale } from './entity/sales.entity';
 import { Request } from 'express';
-import { CreateSale } from './dto/sale.dto';
+import { CreateSale } from './dto/sales.dto';
 import { ProductsService } from 'src/products/products.service';
 import { ClientsService } from 'src/clients/clients.service';
 

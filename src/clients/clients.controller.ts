@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Post, HttpStatus, Res, Put, Body, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ClientsService } from './clients.service';
-import { UpdateClient, CreateClient } from './dto/client.dto';
+import { UpdateClient, CreateClient } from './dto/clients.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('clients')

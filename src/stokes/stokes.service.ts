@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j';
-import { Stoke } from './entity/stokes.entity';
+import { Ranking } from './entity/ranking.entity';
+import { CreateStoke } from './dto/stokes.dto';
 
 @Injectable()
 export class StokesService {
@@ -17,14 +18,13 @@ export class StokesService {
             LIMIT 10
         `).then(res=>{
             const raking = res.records.map(row => {
-                return new Stoke(
+                return new Ranking(
                     row.get('c'),
                     row.get('sum_total_sale')
                 )
             })
             return raking.map(a => a)
         })
-        // sum_total_sale
     }
 
     async findBestSellers(){
@@ -36,15 +36,25 @@ export class StokesService {
             LIMIT 10    
         `).then(res =>{
             const raking = res.records.map(row =>{
-                return new Stoke(
+                return new Ranking(
                     row.get('p'),
                     row.get('sum_quantity_sale')
                 )
             })
             return raking.map(a=>a)
-        })
-        //sum_quantity_sale
-        
+        })        
+    }
+    async findAll(){
+
+    }
+
+    async create(createStoke: CreateStoke){
+
+    }
+
+
+    async getId(idStoke: number){
+
     }
 
 }
