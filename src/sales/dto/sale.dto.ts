@@ -1,32 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, ValidateNested, IsObject } from "class-validator";
-import { Type } from 'class-transformer';
+import { IsNotEmpty,  IsString, IsNumber, IsInt, IsDate, IsDateString } from "class-validator";
+import { DateTime } from 'neo4j-driver';
 
-
-export class SaleDTO {
-    @IsObject()
-    @ValidateNested()
-    // @Type(() => Sale)
-    @ApiProperty()
-    type_payment: string;
-    @ApiProperty()
-    quantity_parcels: number;
-    @ApiProperty()
-    total_sale: number;
-    @ApiProperty()
-    quantity_sale: number;
-}
 
 export class CreateSale {
-    @IsObject()
-    @ValidateNested()
-    // @Type(() => Sale)
     @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
     type_payment: string;
+
     @ApiProperty()
+    @IsNotEmpty()
+    @IsInt()
     quantity_parcels: number;
+
     @ApiProperty()
-    total_sale: number;
-    @ApiProperty()
+    @IsNotEmpty()
+    @IsNumber()
     quantity_sale: number;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsDateString()
+    date: Date;
 }

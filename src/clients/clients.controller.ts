@@ -1,6 +1,6 @@
-import { Controller, Get, Param, Post, HttpStatus, Res, Put, Body } from '@nestjs/common';
+import { Controller, Get, Param, Post, HttpStatus, Res, Put, Body, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ClientsService } from './clients.service';
-import { ClientDTO, UpdateClient, CreateClient } from './dto/client.dto';
+import { UpdateClient, CreateClient } from './dto/client.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('clients')
@@ -16,6 +16,7 @@ export class ClientsController {
     }
 
     @Post()
+    @UsePipes(ValidationPipe)
     post(@Body() createClient: CreateClient){
         return this.clientsService.create(createClient)
     }
@@ -26,6 +27,7 @@ export class ClientsController {
     }
 
     @Put(':id')
+    @UsePipes(ValidationPipe)
     put(@Param('id') id: number, @Body() updateClientDTO: UpdateClient){
         return this.clientsService.edit(id, updateClientDTO)
     }

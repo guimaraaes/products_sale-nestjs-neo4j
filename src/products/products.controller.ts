@@ -1,8 +1,7 @@
-import { Controller, Get, Post, Param, Put, Delete, Body } from '@nestjs/common';
+import { Controller, Get, Post, Param, Put, Delete, Body, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UpdateProduct, CreateProduct } from './dto/product.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiQuery, ApiParam } from '@nestjs/swagger';
 import { ProductsService } from './products.service';
-import { Integer } from 'neo4j-driver';
 
 
 @ApiTags('products')
@@ -17,9 +16,14 @@ export class ProductsController {
         return this.productService.findAll()
     }
 
-    @Get('/disponible')
+    @Get('/disponible/')
     getDisponible(){
         return this.productService.findDisponible();
+    }
+
+    @Get('/disponible/:id')
+    getDisponibleById(@Param('id') id: number){
+        return this.productService.findDisponibleById(id);
     }
 
     @Get(':id')
@@ -32,12 +36,13 @@ export class ProductsController {
         return this.productService.edit(id, product);
     }
 
-    @Delete(':id')
-    delete(@Param('id') id: number) {
-        return this.productService.remove(id);
-    }
+    // @Delete(':id')
+    // delete(@Param('id') id: number) {
+    //     return this.productService.remove(id);
+    // }
 
     @Post(':id_stoke')
+    @UsePipes(ValidationPipe)
     post(@Body() createProduct:CreateProduct, @Param('id_stoke') idStoke: number){
         const product = this.productService.create(createProduct, idStoke)
         return product

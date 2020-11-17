@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Client } from './entity/client.entity';
 import { Neo4jService } from 'nest-neo4j';
-import { ClientDTO, UpdateClient, CreateClient } from './dto/client.dto';
+import {  UpdateClient, CreateClient } from './dto/client.dto';
 
 @Injectable()
 export class ClientsService {
@@ -10,9 +10,10 @@ export class ClientsService {
     ){}
 
     async findAll(): Promise<any>{
-        return await this.neo4jService.read(`
+        const foundclients =  await this.neo4jService.read(`
             MATCH (c:Client)
-            RETURN c, c.name as name, 
+            RETURN  c, 
+                    c.name as name, 
                     c.cpf as cpf, 
                     c.adress as adress
         `).then(res => {
@@ -28,16 +29,21 @@ export class ClientsService {
             })
             return clients.map(a => a)
         })
+        if (foundclients.length == 0){
+            return {message: 'none product'}
+        }
+        return foundclients
     }
 
-    async create(client:CreateClient): Promise<Client>{
+    async create(client:CreateClient): Promise<any>{
         const response = await this.neo4jService.write(`
             MERGE (c:Client 
                     {name: $client_proper.name, 
                     cpf: $client_proper.cpf, 
                     adress: $client_proper.adress})
-            RETURN c, c.name as name, 
-                    c.cpf as cpf,
+            RETURN  c, 
+                    c.name as name, 
+                    c.cpf as cpf, 
                     c.adress as adress
         `, {
             client_proper: client
@@ -56,11 +62,11 @@ export class ClientsService {
         return response
     }
 
-    async findById(idClient: number): Promise<any>{
-        return await this.neo4jService.read(`
-            MATCH (c:Client)
-            WHERE id(c)=toInteger($id_client)
-            RETURN c, c.name as name, 
+    async findById(idClient: number): Promise<Client[]>{
+        const found =  await this.neo4jService.read(`
+            MATCH (c:Client) WHERE id(c)=toInteger($id_client)
+            RETURN  c, 
+                    c.name as name, 
                     c.cpf as cpf, 
                     c.adress as adress
         `, { 
@@ -78,18 +84,26 @@ export class ClientsService {
             })
             return clients.map(a => a)
         })
+        if (found.length == 0 ){
+            throw new NotFoundException('Client not found')
+            
+        }
+        return found
     }
 
-    async edit(idProduct: number, product:UpdateClient): Promise<any>{
+    async edit(idClient: number, client:UpdateClient): Promise<any>{
+        const found = (await this.findById(idClient)).length
+        if (typeof( found) != 'number')
+             return found
         return await this.neo4jService.read(`
-            MATCH (c:Client)
-            WHERE id(c)=toInteger($id_product)
-            SET c.adress = $product_proper.adress
-            RETURN c, c.name as name, 
+            MATCH (c:Client) WHERE id(c) = toInteger($id_client)
+                SET c.adress = $client_proper.adress
+            RETURN  c, 
+                    c.name as name, 
                     c.cpf as cpf, 
                     c.adress as adress
         `, { 
-            product_proper: product, id_product: idProduct
+            client_proper: client, id_client: idClient
         }).then(res => {
             const clients = res.records.map(row => {
                 return new Client(
@@ -107,18 +121,22 @@ export class ClientsService {
     }
 
     async findSales(idClient: number){
+        const found = (await this.findById(idClient)).length
+        if (typeof( found) != 'number')
+             return found
         return await this.neo4jService.read(`
-            MATCH (c:Client)<-[:FROM_CLIENT]-(s:Sale)
-            WHERE id(c)=toInteger($id_client)
-            RETURN c, c.name as name, 
+            MATCH (c:Client)<-[:FROM_CLIENT]-(s:Sale) WHERE id(c)=toInteger($id_client)
+            RETURN  c, 
+                    c.name as name, 
                     c.cpf as cpf, 
-                    c.adress as adress, s
+                    c.adress as adress,
+                    s
         `, { 
             id_client: idClient
         }).then(res => {
             const clients = res.records.map(row => {
                 return new Client(
-                    row.get('c'),
+                    null,
                     row.get('s'),
                     null,
                     row.get('name'),
@@ -132,19 +150,23 @@ export class ClientsService {
     }
 
     async findProducts(idClient: number){
+        const found = (await this.findById(idClient)).length
+        if (typeof( found) != 'number')
+             return found
         return await this.neo4jService.read(`
-            MATCH (c:Client)
-            WHERE id(c)=toInteger($id_client)
+            MATCH (c:Client) WHERE id(c)=toInteger($id_client)
             OPTIONAL MATCH (c)-[:HAS_SALE_PRODUCT]->(p:Product)
-            RETURN c, c.name as name, 
+            RETURN  c, 
+                    c.name as name, 
                     c.cpf as cpf, 
-                    c.adress as adress, p
+                    c.adress as adress, 
+                    p
         `, { 
             id_client: idClient
         }).then(res => {
             const clients = res.records.map(row => {
                 return new Client(
-                    row.get('c'),
+                    null,
                     null,
                     row.get('p'),
                     row.get('name'),
@@ -154,8 +176,6 @@ export class ClientsService {
             })
             return clients.map(a => a)
         })
- 
     }
-
 }
 

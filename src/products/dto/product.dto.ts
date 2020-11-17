@@ -1,38 +1,48 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ValidateNested, IsObject } from "class-validator";
-import { Type } from 'class-transformer';
- 
+import { IsNotEmpty, IsString, IsNumber, IsInt } from "class-validator"; 
 
 export class ProductDTO{
-    @IsObject()
-    @ValidateNested()
-    // @Type(() => Product)
     @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
     name: string;
+
     @ApiProperty()
+    @IsNotEmpty()
+    @IsInt()
     quantity: number;
+
     @ApiProperty()
+    @IsNotEmpty()
+    @IsInt()
     quantity_disponible: number;
+
     @ApiProperty()
+    @IsNotEmpty()
+    @IsNumber()
     price: number
 }
 
 export class CreateProduct{
-    @IsObject()
-    @ValidateNested()
-    // @Type(() => Product)
     @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
     name: string;
+
     @ApiProperty()
+    @IsNotEmpty()
+    @IsInt()
     quantity: number;
+
     @ApiProperty()
+    @IsNotEmpty()
+    @IsNumber()
     price: number
 }
 
 export class UpdateProduct{
-    @IsObject()
-    @ValidateNested()
-    // @Type(() => Product)
     @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
     name: string;
 }
