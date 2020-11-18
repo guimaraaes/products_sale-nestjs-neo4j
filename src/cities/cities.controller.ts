@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CityService } from './cities.service';
 import { CreateCity } from './dto/cities.dto';
@@ -16,6 +16,7 @@ export class CityController {
     }
 
     @Post()
+    @UsePipes(ValidationPipe)
     post(@Body() createCity: CreateCity){
         return this.serviceCity.create(createCity)
     }

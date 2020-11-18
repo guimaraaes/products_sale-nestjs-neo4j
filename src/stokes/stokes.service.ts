@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Neo4jService } from 'nest-neo4j';
 import { Ranking } from './entity/ranking.entity';
 import { CreateStoke } from './dto/stokes.dto';
+import { Stoke } from './entity/stokes.entity';
 
 @Injectable()
 export class StokesService {
@@ -44,17 +45,73 @@ export class StokesService {
             return raking.map(a=>a)
         })        
     }
+    
     async findAll(){
-
+        const foundclients =  await this.neo4jService.read(`
+        MATCH (S:Stoke)
+        RETURN  S, 
+                S.name as name, 
+                S.adress as adress
+        `).then(res => {
+            const clients = res.records.map(row => {
+                return new Stoke(
+                    row.get('S'),
+                    row.get('name'),
+                    row.get('adress')
+                )
+            })
+            return clients.map(a => a)
+        })
+        if (foundclients.length == 0){
+            return {message: 'none product'}
+        }
+        return foundclients
     }
 
-    async create(createStoke: CreateStoke){
-
+    async create(stoke: CreateStoke){
+        return await this.neo4jService.write(`
+            MERGE (S:Stoke 
+                    {name: $stoke_proper.name, 
+                    adress: $stoke_proper.adress})
+            RETURN  S, 
+                    S.name as name, 
+                    S.adress as adress
+        `, {
+            stoke_proper: stoke
+        })
+        .then(res => {
+            const row = res.records[0]
+            return new Stoke(
+                row.get('S'),
+                row.get('name'),
+                row.get('adress')
+            )
+        });
     }
 
 
-    async getId(idStoke: number){
-
+    async findById(idStoke: number){
+        const found =  await this.neo4jService.read(`
+        MATCH (S:Stoke) WHERE id(S) = toInteger($id_stoke)
+        RETURN  S, 
+                S.name as name, 
+                S.adress as adress
+        `, { 
+            id_stoke: idStoke
+        }).then(res => {
+            const stokes = res.records.map(row => {
+                return new Stoke(
+                    row.get('S'),
+                    row.get('name'),
+                    row.get('adress')
+                )
+            })
+            return stokes.map(a => a)
+        })
+        if (found.length == 0 ){
+            throw new NotFoundException('Stoke not found')
+        }
+        return found
     }
 
 }

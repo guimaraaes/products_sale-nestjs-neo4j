@@ -10,18 +10,18 @@ export class StaffService {
 
     async findAll(){
         const foundstaff =  await this.neo4jService.read(`
-            MATCH (st:Staff)
+            MATCH (st:Staff)=[:WORKS_ON]->(S:Stoke)
             RETURN  st, 
                     st.name as name, 
                     st.department as department, 
                     st.e_mail as e_mail, 
-                    st.password as password
+                    st.password as password,
+                    S
         `).then(res => {
             const staff = res.records.map(row => {
                 return new Staff(
                     row.get('st'),
-                    null,
-                    null,
+                    row.get('S'),
                     row.get('name'),
                     row.get('department'), 
                     row.get('e_mail'),
@@ -36,26 +36,27 @@ export class StaffService {
         return foundstaff
     }
 
-    async create(staff: CreateStaff){
+    async create(staff: CreateStaff, idStoke: number){
         const response = await this.neo4jService.write(`
-            MERGE (c:Staff 
+            MATCH (S:Stoke) WHERE id(S) = $id_stoke
+            MERGE (st:Staff 
                     {name: $staff_proper.name, 
                     cpf: $staff_proper.cpf, 
-                    adress: $staff_proper.adress})
+                    adress: $staff_proper.adress})-[:WORKS_ON]->(S)
             RETURN  st, 
                     st.name as name, 
                     st.department as department, 
                     st.e_mail as e_mail, 
-                    st.password as password
+                    st.password as password,
+                    S
         `, {
-            staff_proper: staff
+            staff_proper: staff, id_stoke:idStoke
         })
         .then(res => {
             const row = res.records[0]
             return new Staff(
-                row.get('c'),
-                null,
-                null,
+                row.get('st'),
+                row.get('S'),
                 row.get('name'),
                 row.get('department'), 
                 row.get('e_mail'),
@@ -68,20 +69,20 @@ export class StaffService {
 
     async getId(idStaff: number): Promise<Staff[]>{
         const found =  await this.neo4jService.read(`
-            MATCH (st:Staff) WHERE id(c)=toInteger($id_staff)
+            MATCH (st:Staff)-[:WORKS_ON]->(S:Stoke) WHERE id(c) = toInteger($id_staff)
             RETURN  st, 
                     st.name as name, 
                     st.department as department, 
                     st.e_mail as e_mail, 
-                    st.password as password
+                    st.password as password,
+                    S
         `, {
             id_staff: idStaff
         }).then(res => {
             const staff = res.records.map(row => {
                 return new Staff(
                     row.get('st'),
-                    null,
-                    null,
+                    row.get('S'),
                     row.get('name'),
                     row.get('department'), 
                     row.get('e_mail'),

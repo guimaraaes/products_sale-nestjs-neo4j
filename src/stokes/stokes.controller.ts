@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { StokesService } from './stokes.service';
 import { CreateStoke } from './dto/stokes.dto';
@@ -27,13 +27,13 @@ export class StokesController {
     }
 
     @Post()
+    @UsePipes(ValidationPipe)
     post(@Body() createStoke: CreateStoke){
         return this.serviceStoke.create(createStoke)
     }
 
     @Get(':id')
     getById(@Param('id') id: number){
-        return this.serviceStoke.getId(id)
-
+        return this.serviceStoke.findById(id)
     }
 }

@@ -36,7 +36,7 @@ export class ClientsService {
     }
 
     async create(client:CreateClient): Promise<any>{
-        const response = await this.neo4jService.write(`
+        return await this.neo4jService.write(`
             MERGE (c:Client 
                     {name: $client_proper.name, 
                     cpf: $client_proper.cpf, 
@@ -59,12 +59,11 @@ export class ClientsService {
                 row.get('adress')
             )
         });
-        return response
     }
 
     async findById(idClient: number): Promise<Client[]>{
         const found =  await this.neo4jService.read(`
-            MATCH (c:Client) WHERE id(c)=toInteger($id_client)
+            MATCH (c:Client) WHERE id(c) = toInteger($id_client)
             RETURN  c, 
                     c.name as name, 
                     c.cpf as cpf, 

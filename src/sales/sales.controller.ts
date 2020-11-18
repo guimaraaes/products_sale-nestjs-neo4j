@@ -28,9 +28,8 @@ export class SalesController {
     @Post(':id_product/:id_client')
     @UsePipes(ValidationPipe)
     post(@Body() createSaleDTO: CreateSale, 
-            @Param('id_product') idProduct: number,
-            @Param('id_client') idClient: number){
-        // return createSaleDTO
+         @Param('id_product') idProduct: number,
+         @Param('id_client') idClient: number){
         return this.saleService.create(createSaleDTO, idProduct, idClient)
     }
 }

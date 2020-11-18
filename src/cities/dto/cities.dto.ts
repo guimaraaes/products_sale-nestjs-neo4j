@@ -5,6 +5,11 @@ export class CreateCity{
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
+    name: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
     state: string;
 
     @ApiProperty()

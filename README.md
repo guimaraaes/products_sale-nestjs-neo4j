@@ -112,3 +112,10 @@ API de gerenciamento de produtos, vendas e clientes em um estoque com NestJs e N
 
   ### Api
   - [ ] Autenticação com JWT
+  - [ ] Get melhores funcionários
+  - [ ] Get quantidade de clientes por cidade
+  - [ ] Get quantidade de funcionários por cidade
+  - [ ] Get clientes
+  - [ ] Get produtos
+  - [ ] Get funcionários
+  - [ ] Get
