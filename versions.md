@@ -25,6 +25,7 @@ API de gerenciamento de produtos, vendas e clientes em um estoque com NestJs e N
 <!-- - [ ] CONSTRAINTS nos nomes dos objetos -->
 - [x] Renomear as variáveis
 
+<img src="https://raw.githubusercontent.com/guimaraaes/products_sale-nestjs-neo4j/master/arrow-schema/v1.svg">
 
 ## Staff e City v2
   ### Database
@@ -44,3 +45,6 @@ API de gerenciamento de produtos, vendas e clientes em um estoque com NestJs e N
   - [ ] Get produtos
   - [ ] Get funcionários
   - [ ] Get
+  
+  <img src="https://raw.githubusercontent.com/guimaraaes/products_sale-nestjs-neo4j/master/arrow-schema/v2.svg">
+
