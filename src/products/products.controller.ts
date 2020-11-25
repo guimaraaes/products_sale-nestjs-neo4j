@@ -9,28 +9,28 @@ import { ProductsService } from './products.service';
 export class ProductsController {
     constructor(
         private readonly productService: ProductsService,
-    ) {}
-        
+    ) { }
+
     @Get()
-    getAll(){
+    getAll() {
         return this.productService.findAll()
     }
 
     @Get('/disponible/')
-    getDisponible(){
+    getDisponible() {
         return this.productService.findDisponible();
     }
 
     @Get('/disponible/:id')
-    getDisponibleById(@Param('id') id: number){
+    getDisponibleById(@Param('id') id: number) {
         return this.productService.findDisponibleById(id);
     }
 
     @Get(':id')
-    getById(@Param('id') id: number){
+    getById(@Param('id') id: number) {
         return this.productService.findById(id);
-    }    
-    
+    }
+
     @Put(':id')
     put(@Body() product: UpdateProduct, @Param('id') id: number) {
         return this.productService.edit(id, product);
@@ -43,8 +43,8 @@ export class ProductsController {
 
     @Post(':id_stoke')
     @UsePipes(ValidationPipe)
-    post(@Body() createProduct:CreateProduct, @Param('id_stoke') idStoke: number){
-        const product = this.productService.create(createProduct, idStoke)
+    post(@Body() createProduct: CreateProduct) {
+        const product = this.productService.create(createProduct)
         return product
     }
 }

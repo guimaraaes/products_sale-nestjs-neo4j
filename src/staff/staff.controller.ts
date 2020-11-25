@@ -4,24 +4,24 @@ import { StaffService } from './staff.service';
 import { CreateStaff } from './dto/staff.dt';
 
 
-@ApiTags('staff')
+@ApiTags('stokes')
 @Controller('staff')
-export class StaffController{
+export class StaffController {
     constructor(
         private readonly serviceStaff: StaffService
-    ){}
+    ) { }
     @Get()
-    getAll(){
+    getAll() {
         return this.serviceStaff.findAll()
     }
 
     @Post()
-    post(@Body() createStaff: CreateStaff, @Param('id_stoke') idStoke: number){
-        return this.serviceStaff.create(createStaff, idStoke)
+    post(@Body() createStaff: CreateStaff) {
+        return this.serviceStaff.create(createStaff)
     }
 
     @Get(':id')
-    getById(@Param('id') id: number){
+    getById(@Param('id') id: number) {
         return this.serviceStaff.getId(id)
     }
 

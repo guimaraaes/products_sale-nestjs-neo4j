@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsEmail } from "class-validator";
+import { CreateCity } from 'src/cities/dto/cities.dto';
+import { CreateStoke } from 'src/stokes/dto/stokes.dto';
 
-export class CreateStaff{
+export class CreateStaff {
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
@@ -21,6 +23,12 @@ export class CreateStaff{
     @IsNotEmpty()
     @IsString()
     password: string;
+
+    @ApiProperty()
+    city: CreateCity
+
+    @ApiProperty()
+    stoke: CreateStoke
 }
 
 

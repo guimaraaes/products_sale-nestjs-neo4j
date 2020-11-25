@@ -1,15 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateStaff } from './dto/staff.dt';
 import { Neo4jService } from 'nest-neo4j';
-import {Staff} from './entity/staff.entity'
+import { Staff } from './entity/staff.entity'
 @Injectable()
 export class StaffService {
     constructor(
         private readonly neo4jService: Neo4jService
-    ){}
+    ) { }
 
-    async findAll(){
-        const foundstaff =  await this.neo4jService.read(`
+    async findAll() {
+        const foundstaff = await this.neo4jService.read(`
             MATCH (st:Staff)=[:WORKS_ON]->(S:Stoke)
             RETURN  st, 
                     st.name as name, 
@@ -23,26 +23,42 @@ export class StaffService {
                     row.get('st'),
                     row.get('S'),
                     row.get('name'),
-                    row.get('department'), 
+                    row.get('department'),
                     row.get('e_mail'),
                     row.get('password')
                 )
             })
             return staff.map(a => a)
         })
-        if (foundstaff.length == 0){
-            return {message: 'none staff'}
+        if (foundstaff.length == 0) {
+            return { message: 'none staff' }
         }
         return foundstaff
     }
 
-    async create(staff: CreateStaff, idStoke: number){
+    async create(staff: CreateStaff) {
         const response = await this.neo4jService.write(`
-            MATCH (S:Stoke) WHERE id(S) = $id_stoke
-            MERGE (st:Staff 
-                    {name: $staff_proper.name, 
-                    cpf: $staff_proper.cpf, 
-                    adress: $staff_proper.adress})-[:WORKS_ON]->(S)
+            OPTIONAL MATCH (:City)<-[rC:LIVES_ON]-(:Staff {name: $staff_proper.name, department: $staff_proper.department})-[rS:WORKS_ON]->(:Stoke)
+            DELETE rC, rS
+
+            MERGE(ctS:City {name: $stokeCity_proper.name, 
+                state: $stokeCity_proper.state, 
+                country: $stokeCity_proper.country})
+            WITH ctS
+
+            MERGE (S:Stoke { name:$stoke_proper.name })-[:LOCALED_IN]->(ctS)
+            WITH S
+
+            MERGE (st:Staff {name: $staff_proper.name, department: $staff_proper.department})
+            WITH st, S
+
+            MERGE (ct:City {name: $city_proper.name, 
+                        state: $city_proper.state, 
+                        country: $city_proper.country})
+            WITH st, ct, S
+
+            MERGE (ct)<-[:LIVES_ON]-(st)-[:WORKS_ON]->(S)
+                
             RETURN  st, 
                     st.name as name, 
                     st.department as department, 
@@ -50,15 +66,17 @@ export class StaffService {
                     st.password as password,
                     S
         `, {
-            staff_proper: staff, id_stoke:idStoke
-        })
-        .then(res => {
+            staff_proper: staff,
+            stoke_proper: staff.stoke,
+            stokeCity_proper: staff.stoke.adress,
+            city_proper: staff.city,
+        }).then(res => {
             const row = res.records[0]
             return new Staff(
                 row.get('st'),
                 row.get('S'),
                 row.get('name'),
-                row.get('department'), 
+                row.get('department'),
                 row.get('e_mail'),
                 row.get('password')
             )
@@ -67,8 +85,8 @@ export class StaffService {
     }
 
 
-    async getId(idStaff: number): Promise<Staff[]>{
-        const found =  await this.neo4jService.read(`
+    async getId(idStaff: number): Promise<Staff[]> {
+        const found = await this.neo4jService.read(`
             MATCH (st:Staff)-[:WORKS_ON]->(S:Stoke) WHERE id(c) = toInteger($id_staff)
             RETURN  st, 
                     st.name as name, 
@@ -84,14 +102,14 @@ export class StaffService {
                     row.get('st'),
                     row.get('S'),
                     row.get('name'),
-                    row.get('department'), 
+                    row.get('department'),
                     row.get('e_mail'),
                     row.get('password')
                 )
             })
             return staff.map(a => a)
         })
-        if (found.length == 0){
+        if (found.length == 0) {
             throw new NotFoundException('city not found')
         }
         return found

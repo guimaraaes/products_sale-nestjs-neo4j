@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsNumber, IsInt } from "class-validator"; 
+import { IsNotEmpty, IsString, IsNumber, IsInt } from "class-validator";
+import { CreateStoke } from 'src/stokes/dto/stokes.dto';
 
-export class ProductDTO{
+export class ProductDTO {
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
@@ -23,7 +24,7 @@ export class ProductDTO{
     price: number
 }
 
-export class CreateProduct{
+export class CreateProduct {
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
@@ -38,9 +39,12 @@ export class CreateProduct{
     @IsNotEmpty()
     @IsNumber()
     price: number
+
+    @ApiProperty()
+    stoke: CreateStoke
 }
 
-export class UpdateProduct{
+export class UpdateProduct {
     @ApiProperty()
     @IsNotEmpty()
     @IsString()

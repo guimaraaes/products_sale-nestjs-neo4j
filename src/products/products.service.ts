@@ -8,11 +8,11 @@ import { UpdateProduct, CreateProduct } from './dto/products.dto';
 @Injectable()
 export class ProductsService {
     constructor(
-        @Inject(REQUEST) 
-        private readonly request:Request,
+        @Inject(REQUEST)
+        private readonly request: Request,
         private readonly neo4jService: Neo4jService
-    ) {}
-    
+    ) { }
+
     async findAll(): Promise<Product[]> {
         const foundproducts = await this.neo4jService.read(`
             MATCH (p:Product)
@@ -27,20 +27,20 @@ export class ProductsService {
                     row.get('p'),
                     row.get('name'),
                     row.get('quantity'),
-                    row.get('quantity_disponible'), 
+                    row.get('quantity_disponible'),
                     row.get('price')
                 )
             })
             return products.map(a => a)
         })
-        if (foundproducts.length == 0){
+        if (foundproducts.length == 0) {
             throw new NotFoundException('none product')
         }
         return foundproducts
-       
+
     }
 
-    async findDisponible(): Promise<Product[]>{
+    async findDisponible(): Promise<Product[]> {
         const foundDisponible = await this.neo4jService.read(`
             MATCH (p:Product) WHERE p.quantity_disponible > 0
             RETURN  p, 
@@ -54,21 +54,21 @@ export class ProductsService {
                     row.get('p'),
                     row.get('name'),
                     row.get('quantity'),
-                    row.get('quantity_disponible'), 
+                    row.get('quantity_disponible'),
                     row.get('price')
                 )
             })
             return products.map(a => a)
         })
-        if (foundDisponible.length == 0){
+        if (foundDisponible.length == 0) {
             throw new NotFoundException('none product disponible')
         }
         return foundDisponible
     }
 
-    async findDisponibleById(idProduct: number): Promise<Product[]>{
+    async findDisponibleById(idProduct: number): Promise<Product[]> {
         const found = (await this.findById(idProduct)).length
-        if (typeof(found) != 'number')
+        if (typeof (found) != 'number')
             return found
         const foundDisponible = await this.neo4jService.read(`
             MATCH (p:Product) WHERE p.quantity_disponible > 0 AND id(p) = toInteger($id_product)
@@ -77,7 +77,7 @@ export class ProductsService {
                     p.quantity as quantity,
                     p.quantity_disponible as quantity_disponible,
                     p.price as price
-        `,{
+        `, {
             id_product: idProduct
         }).then(res => {
             const products = res.records.map(row => {
@@ -85,19 +85,19 @@ export class ProductsService {
                     row.get('p'),
                     row.get('name'),
                     row.get('quantity'),
-                    row.get('quantity_disponible'), 
+                    row.get('quantity_disponible'),
                     row.get('price')
                 )
             })
             return products.map(a => a)
         })
-        if (foundDisponible.length == 0){
+        if (foundDisponible.length == 0) {
             throw new NotFoundException('product not disponible')
         }
         return foundDisponible
     }
 
-    async findById(idProduct: number): Promise<Product[]>{
+    async findById(idProduct: number): Promise<Product[]> {
         const found = await this.neo4jService.read(`
             MATCH (p:Product)
             WHERE id(p)=toInteger($id_product)
@@ -106,7 +106,7 @@ export class ProductsService {
                     p.quantity as quantity,
                     p.quantity_disponible as quantity_disponible,
                     p.price as price
-        `, { 
+        `, {
             id_product: idProduct
         }).then(res => {
             const products = res.records.map(row => {
@@ -114,21 +114,21 @@ export class ProductsService {
                     row.get('p'),
                     row.get('name'),
                     row.get('quantity'),
-                    row.get('quantity_disponible'), 
+                    row.get('quantity_disponible'),
                     row.get('price')
                 )
             })
-            return products.map(a=>a)
+            return products.map(a => a)
         })
-        if (found.length == 0){
+        if (found.length == 0) {
             throw new NotFoundException('Product not found')
         }
         return found
     }
 
-    async edit(idProduct: number, product: UpdateProduct){
+    async edit(idProduct: number, product: UpdateProduct) {
         const found = (await this.findById(idProduct)).length
-        if (typeof(found) != 'number')
+        if (typeof (found) != 'number')
             return found
         return await this.neo4jService.write(`
             MATCH (p:Product)
@@ -140,35 +140,35 @@ export class ProductsService {
                     p.quantity_disponible as quantity_disponible,
                     p.price as price
         `, {
-            product_proper: product, id_product:idProduct
+            product_proper: product, id_product: idProduct
         }).then(res => {
             const row = res.records[0]
             return new Product(
                 row.get('p'),
                 row.get('name'),
                 row.get('quantity'),
-                row.get('quantity_disponible'), 
+                row.get('quantity_disponible'),
                 row.get('price')
             )
         });
     }
 
-    async remove(idProduct: number){
+    async remove(idProduct: number) {
         const found = (await this.findById(idProduct)).length
-        if (typeof(found) != 'number')
+        if (typeof (found) != 'number')
             return found
         await this.neo4jService.read(`
             MATCH (p:Product)
             WHERE id(p)=toInteger($id_product)
             DETACH DELETE p
-        `, { 
+        `, {
             id_product: idProduct
         })
     }
 
-    async create(product: CreateProduct, idStoke: number): Promise<any>{
+    async create(product: CreateProduct): Promise<any> {
         return await this.neo4jService.write(`
-            MATCH (s:Stoke) WHERE id(s) = toInteger($id_stoke)
+            MERGE (s:Stoke { name:$stoke_proper.name, adress: $stoke_proper.adress })
             WITH s
             MERGE (s)-[hasp:HAS_PRODUCT]->(p:Product 
                                         {name: $product_proper.name,
@@ -188,18 +188,18 @@ export class ProductsService {
                     p.quantity_disponible as quantity_disponible,
                     p.price as price
         `, {
-            product_proper: product, id_stoke:idStoke
+            product_proper: product, stoke_proper: product.stoke
         })
-        .then(res => {
-            const row = res.records[0]
-            return new Product(
-                row.get('p'),
-                row.get('name'),
-                row.get('quantity'),
-                row.get('quantity_disponible'), 
-                row.get('price')
-            )
-        });        
+            .then(res => {
+                const row = res.records[0]
+                return new Product(
+                    row.get('p'),
+                    row.get('name'),
+                    row.get('quantity'),
+                    row.get('quantity_disponible'),
+                    row.get('price')
+                )
+            });
     }
 
 }

@@ -29,22 +29,23 @@ API de gerenciamento de produtos, vendas e clientes em um estoque com NestJs e N
 
 ## Staff e City v2
   ### Database
-- [ ] Staff
-  - [ ] HAS_DONE_SALE
-  - [ ] WORKS_ON
-- [ ] City
-  - [ ] LOCALED_ON
-  - [ ] LIVES_ON
+- [x] Staff
+  - [x] HAS_DONE_SALE
+  - [x] WORKS_ON
+- [x] City
+  - [x] LOCALED_ON
+  - [x] LIVES_ON
 
   ### Api
   - [ ] Autenticação com JWT
   - [ ] Get melhores funcionários
-  - [ ] Get quantidade de clientes por cidade
-  - [ ] Get quantidade de funcionários por cidade
-  - [ ] Get clientes
+  - [ ] controller de cities e stokes para uso por client e staff
+  <!-- - [ ] Get quantidade de clientes por cidade
+  - [ ] Get quantidade de funcionários por cidade -->
+  <!-- - [ ] Get clientes
   - [ ] Get produtos
   - [ ] Get funcionários
   - [ ] Get
-  
+   -->
   <img src="https://raw.githubusercontent.com/guimaraaes/products_sale-nestjs-neo4j/master/arrow-schema/v2.svg">
 
