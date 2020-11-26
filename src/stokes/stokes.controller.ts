@@ -31,15 +31,4 @@ export class StokesController {
     getAll() {
         return this.serviceStoke.findAll()
     }
-
-    // @Post()
-    // @UsePipes(ValidationPipe)
-    // post(@Body() createStoke: CreateStoke){
-    //     return this.serviceStoke.create(createStoke)
-    // }
-
-    // @Get(':id')
-    // getById(@Param('id') id: number){
-    //     return this.serviceStoke.findById(id)
-    // }
 }

@@ -14,12 +14,7 @@ export class CreateClient {
     cpf: string;
 
     @ApiProperty()
-    @IsNotEmpty()
-    @IsString()
-    adress: string;
-
-    @ApiProperty()
-    city: CreateCity
+    adress: CreateCity
 }
 
 
@@ -27,6 +22,6 @@ export class UpdateClient {
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    adress: string;
+    adress: CreateCity;
 }
 

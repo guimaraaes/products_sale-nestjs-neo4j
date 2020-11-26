@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Body, Param, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CityService } from './cities.service';
 
@@ -13,17 +13,5 @@ export class CityController {
     getAll() {
         return this.serviceCity.findAll()
     }
-
-    // @Post()
-    // @UsePipes(ValidationPipe)
-    // post(@Body() createCity: CreateCity){
-    //     return this.serviceCity.create(createCity)
-    // }
-
-    // @Get(':id')
-    // getById(@Param('id') id: number){
-    //     return this.serviceCity.getId(id)
-    // }
-
 
 }

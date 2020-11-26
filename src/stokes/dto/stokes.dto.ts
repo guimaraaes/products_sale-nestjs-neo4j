@@ -11,6 +11,6 @@ export class CreateStoke {
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    adress: CreateCity;
+    city: CreateCity;
 }
 

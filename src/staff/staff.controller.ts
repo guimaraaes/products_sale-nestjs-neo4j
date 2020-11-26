@@ -10,6 +10,7 @@ export class StaffController {
     constructor(
         private readonly serviceStaff: StaffService
     ) { }
+
     @Get()
     getAll() {
         return this.serviceStaff.findAll()
@@ -22,8 +23,6 @@ export class StaffController {
 
     @Get(':id')
     getById(@Param('id') id: number) {
-        return this.serviceStaff.getId(id)
+        return this.serviceStaff.findById(id)
     }
-
-
 }

@@ -43,8 +43,9 @@ export class ProductsController {
 
     @Post(':id_stoke')
     @UsePipes(ValidationPipe)
-    post(@Body() createProduct: CreateProduct) {
-        const product = this.productService.create(createProduct)
+    post(@Body() createProduct: CreateProduct,
+        @Param('id_stoke') id_stoke: number) {
+        const product = this.productService.create(createProduct, id_stoke)
         return product
     }
 }

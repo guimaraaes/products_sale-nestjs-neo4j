@@ -1,4 +1,4 @@
-import { Controller, Get, Res, Delete, Put, Body, HttpStatus, Param, Post, UsePipes, ValidationPipe} from '@nestjs/common';
+import { Controller, Get, Res, Delete, Put, Body, HttpStatus, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SalesService } from './sales.service';
 import { CreateSale } from './dto/sales.dto';
@@ -8,28 +8,29 @@ import { CreateSale } from './dto/sales.dto';
 export class SalesController {
     constructor(
         private readonly saleService: SalesService
-    ) {}
+    ) { }
 
     @Get()
-    getAll(){
+    getAll() {
         return this.saleService.findAll()
     }
 
     @Get(':id')
-    getById(@Param('id') id:number ){
+    getById(@Param('id') id: number) {
         return this.saleService.findById(id)
     }
 
     @Delete(':id')
-    delete(@Param('id') id:number ) {
+    delete(@Param('id') id: number) {
         return this.saleService.remove(id)
     }
 
-    @Post(':id_product/:id_client')
+    @Post(':id_product/:id_client/:id_staff')
     @UsePipes(ValidationPipe)
-    post(@Body() createSaleDTO: CreateSale, 
-         @Param('id_product') idProduct: number,
-         @Param('id_client') idClient: number){
-        return this.saleService.create(createSaleDTO, idProduct, idClient)
+    post(@Body() createSaleDTO: CreateSale,
+        @Param('id_product') idProduct: number,
+        @Param('id_client') idClient: number,
+        @Param('id_staff') id_staff: number) {
+        return this.saleService.create(createSaleDTO, idProduct, idClient, id_staff)
     }
 }

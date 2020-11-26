@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CreateStaff } from './dto/staff.dt';
 import { Neo4jService } from 'nest-neo4j';
 import { Staff } from './entity/staff.entity'
@@ -9,7 +9,7 @@ export class StaffService {
     ) { }
 
     async findAll() {
-        const foundstaff = await this.neo4jService.read(`
+        return await this.neo4jService.read(`
             MATCH (st:Staff)=[:WORKS_ON]->(S:Stoke)
             RETURN  st, 
                     st.name as name, 
@@ -18,7 +18,7 @@ export class StaffService {
                     st.password as password,
                     S
         `).then(res => {
-            const staff = res.records.map(row => {
+            const staffs = res.records.map(row => {
                 return new Staff(
                     row.get('st'),
                     row.get('S'),
@@ -28,17 +28,15 @@ export class StaffService {
                     row.get('password')
                 )
             })
-            return staff.map(a => a)
+            return staffs.length > 0 ? staffs.map(a => a)
+                : new NotFoundException('staffs not found')
         })
-        if (foundstaff.length == 0) {
-            return { message: 'none staff' }
-        }
-        return foundstaff
+
     }
 
     async create(staff: CreateStaff) {
-        const response = await this.neo4jService.write(`
-            OPTIONAL MATCH (:City)<-[rC:LIVES_ON]-(:Staff {name: $staff_proper.name, department: $staff_proper.department})-[rS:WORKS_ON]->(:Stoke)
+        return await this.neo4jService.write(`
+            OPTIONAL MATCH (:City)<-[rC:LIVES_ON]-(S:Staff {name: $staff_proper.name, department: $staff_proper.department})-[rS:WORKS_ON]->(:Stoke)
             DELETE rC, rS
 
             MERGE(ctS:City {name: $stokeCity_proper.name, 
@@ -57,7 +55,7 @@ export class StaffService {
                         country: $city_proper.country})
             WITH st, ct, S
 
-            MERGE (ct)<-[:LIVES_ON]-(st)-[:WORKS_ON]->(S)
+            MERGE (ct)<-[:LIVES_ON]-(st)-[:WORKS_ON {since: 'DEFAULT', sum_quantity_sale: 0, sales_count: 0 }]->(S)
                 
             RETURN  st, 
                     st.name as name, 
@@ -68,25 +66,25 @@ export class StaffService {
         `, {
             staff_proper: staff,
             stoke_proper: staff.stoke,
-            stokeCity_proper: staff.stoke.adress,
+            stokeCity_proper: staff.stoke.city,
             city_proper: staff.city,
         }).then(res => {
             const row = res.records[0]
-            return new Staff(
-                row.get('st'),
-                row.get('S'),
-                row.get('name'),
-                row.get('department'),
-                row.get('e_mail'),
-                row.get('password')
-            )
+            return res.records.length > 0 ?
+                new Staff(
+                    row.get('st'),
+                    row.get('S'),
+                    row.get('name'),
+                    row.get('department'),
+                    row.get('e_mail'),
+                    row.get('password')
+                ) : new BadRequestException('error on create staff')
         });
-        return response
     }
 
 
-    async getId(idStaff: number): Promise<Staff[]> {
-        const found = await this.neo4jService.read(`
+    async findById(idStaff: number): Promise<any> {
+        return await this.neo4jService.read(`
             MATCH (st:Staff)-[:WORKS_ON]->(S:Stoke) WHERE id(c) = toInteger($id_staff)
             RETURN  st, 
                     st.name as name, 
@@ -107,11 +105,8 @@ export class StaffService {
                     row.get('password')
                 )
             })
-            return staff.map(a => a)
+            return staff.length > 0 ? staff.map(a => a)
+                : new NotFoundException('staff not found')
         })
-        if (found.length == 0) {
-            throw new NotFoundException('city not found')
-        }
-        return found
     }
 }

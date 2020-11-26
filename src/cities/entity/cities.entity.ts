@@ -6,7 +6,7 @@ export class City {
         private readonly name: string,
         private readonly state: string,
         private readonly country: string,
-    ) {}
+    ) { }
 
     toJson(): Record<string, any> {
         return {
@@ -14,7 +14,6 @@ export class City {
             name: this.name,
             state: this.state,
             country: this.country,
-            // tagList: this.tagList.map(tag => tag.toJson()),
         }
     }
 }
