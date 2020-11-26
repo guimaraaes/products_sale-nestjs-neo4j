@@ -11,9 +11,9 @@ export class StaffController {
         private readonly serviceStaff: StaffService
     ) { }
 
-    @Get()
-    getAll() {
-        return this.serviceStaff.findAll()
+    @Get(':id_stoke')
+    getAll(@Param('id_stoke') id_stoke: number) {
+        return this.serviceStaff.findAll(id_stoke)
     }
 
     @Post()

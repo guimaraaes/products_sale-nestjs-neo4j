@@ -8,20 +8,18 @@ export class StaffService {
         private readonly neo4jService: Neo4jService
     ) { }
 
-    async findAll() {
+    async findAll(idStoke: number) {
         return await this.neo4jService.read(`
-            MATCH (st:Staff)=[:WORKS_ON]->(S:Stoke)
+            MATCH (st:Staff)-[:WORKS_ON]->(S:Stoke) WHERE id(S) = toInteger($id_stoke)
             RETURN  st, 
                     st.name as name, 
                     st.department as department, 
                     st.e_mail as e_mail, 
-                    st.password as password,
-                    S
-        `).then(res => {
+                    st.password as password
+        `, { id_stoke: idStoke }).then(res => {
             const staffs = res.records.map(row => {
                 return new Staff(
                     row.get('st'),
-                    row.get('S'),
                     row.get('name'),
                     row.get('department'),
                     row.get('e_mail'),
@@ -61,8 +59,7 @@ export class StaffService {
                     st.name as name, 
                     st.department as department, 
                     st.e_mail as e_mail, 
-                    st.password as password,
-                    S
+                    st.password as password 
         `, {
             staff_proper: staff,
             stoke_proper: staff.stoke,
@@ -73,7 +70,6 @@ export class StaffService {
             return res.records.length > 0 ?
                 new Staff(
                     row.get('st'),
-                    row.get('S'),
                     row.get('name'),
                     row.get('department'),
                     row.get('e_mail'),
@@ -85,20 +81,18 @@ export class StaffService {
 
     async findById(idStaff: number): Promise<any> {
         return await this.neo4jService.read(`
-            MATCH (st:Staff)-[:WORKS_ON]->(S:Stoke) WHERE id(c) = toInteger($id_staff)
+            MATCH (st:Staff)-[:WORKS_ON]->(S:Stoke) WHERE id(st) = toInteger($id_staff)
             RETURN  st, 
                     st.name as name, 
                     st.department as department, 
                     st.e_mail as e_mail, 
-                    st.password as password,
-                    S
+                    st.password as password 
         `, {
             id_staff: idStaff
         }).then(res => {
             const staff = res.records.map(row => {
                 return new Staff(
                     row.get('st'),
-                    row.get('S'),
                     row.get('name'),
                     row.get('department'),
                     row.get('e_mail'),

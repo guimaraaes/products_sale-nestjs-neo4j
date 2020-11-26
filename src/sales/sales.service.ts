@@ -109,13 +109,13 @@ export class SalesService {
             throw new NotFoundException('product not found')
 
         if (!((await this.serviceProduct.findDisponibleById(idProduct)).length > 0))
-            throw new NotFoundException('product not found')
+            throw new NotFoundException('product not disponible')
 
-        if ((await this.serviceClient.findById(idClient)).length > 0)
+        if (!((await this.serviceClient.findById(idClient)).length > 0))
             throw new NotFoundException('client not found')
 
-        if ((await this.serviceStaff.findById(idStaff)).length > 0)
-            throw new NotFoundException('client not found')
+        if (!((await this.serviceStaff.findById(idStaff)).length > 0))
+            throw new NotFoundException('staff not found')
 
         return await this.neo4jService.write(`
             MATCH (p:Product) WHERE id(p) = toInteger($id_product)
@@ -144,8 +144,7 @@ export class SalesService {
             WITH st, p, c, s
             MERGE (st)-[hasds:HAS_DONE_SALE]->(s)
                 SET hasds.date_sale = $sale_proper.date, 
-                    hasds.client_id = toInteger($id_client),
-                    hasds.type_product = p.type
+                    hasds.client_id = toInteger($id_client)
             
             WITH c, p, s
             

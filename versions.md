@@ -39,13 +39,8 @@ API de gerenciamento de produtos, vendas e clientes em um estoque com NestJs e N
   ### Api
   - [ ] Autenticação com JWT
   - [ ] Get melhores funcionários
-  - [ ] controller de cities e stokes para uso por client e staff
-  <!-- - [ ] Get quantidade de clientes por cidade
-  - [ ] Get quantidade de funcionários por cidade -->
-  <!-- - [ ] Get clientes
-  - [ ] Get produtos
-  - [ ] Get funcionários
-  - [ ] Get
-   -->
+  - [x] create de cities e stokes para uso por client e staff
+
+
   <img src="https://raw.githubusercontent.com/guimaraaes/products_sale-nestjs-neo4j/master/arrow-schema/v2.svg">
 

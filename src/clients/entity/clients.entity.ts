@@ -7,7 +7,6 @@ export class Client {
         private readonly client: Node,
         private readonly name: string,
         private readonly cpf: string,
-        private readonly adress: string,
     ) { }
 
     toJson(): Record<string, any> {
@@ -15,7 +14,6 @@ export class Client {
             ...this.client.properties,
             name: this.name,
             cpf: this.cpf,
-            adress: this.adress,
         }
     }
 }
@@ -25,7 +23,6 @@ export class ClientSales {
         private readonly sale: Node,
         private readonly name: string,
         private readonly cpf: string,
-        private readonly adress: string,
     ) { }
 }
 
@@ -34,6 +31,5 @@ export class ClientProducts {
         private readonly products: Node,
         private readonly name: string,
         private readonly cpf: string,
-        private readonly adress: string,
     ) { }
 }

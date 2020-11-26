@@ -14,15 +14,13 @@ export class ClientsService {
             MATCH (c:Client)
             RETURN  c, 
                     c.name as name, 
-                    c.cpf as cpf, 
-                    c.adress as adress
+                    c.cpf as cpf 
         `).then(res => {
             const clients = res.records.map(row => {
                 return new Client(
                     row.get('c'),
                     row.get('name'),
-                    row.get('cpf'),
-                    row.get('adress')
+                    row.get('cpf')
                 )
             })
             return clients.length > 0 ? clients.map(a => a)
@@ -32,18 +30,15 @@ export class ClientsService {
 
     async create(client: CreateClient): Promise<any> {
         return await this.neo4jService.write(`
-            OPTIONAL MATCH (:Client {name: $client_proper.name, 
-                cpf: $client_proper.cpf, 
-                adress: $city_proper.name})-[rC:LIVES_ON]->(:City)
+            OPTIONAL MATCH (:Client2 {name: $client_proper.name, 
+                cpf: $client_proper.cpf})-[rC:LIVES_ON]->(:City2)
             DELETE rC
-            
-            MERGE (c:Client 
+            MERGE (c:Client2
                     {name: $client_proper.name, 
-                    cpf: $client_proper.cpf,
-                    adress: $city_proper.name})
+                    cpf: $client_proper.cpf})
             WITH c
 
-            MERGE (ct:City 
+            MERGE (ct:City2
                     {name: $city_proper.name, 
                     state: $city_proper.state, 
                     country: $city_proper.country})
@@ -53,8 +48,7 @@ export class ClientsService {
 
             RETURN  c, 
                     c.name as name, 
-                    c.cpf as cpf, 
-                    c.adress as adress
+                    c.cpf as cpf
         `, {
             client_proper: client,
             city_proper: client.adress
@@ -64,8 +58,7 @@ export class ClientsService {
                 new Client(
                     row.get('c'),
                     row.get('name'),
-                    row.get('cpf'),
-                    row.get('adress')
+                    row.get('cpf')
                 ) : new BadRequestException('error on create')
         });
     }
@@ -75,8 +68,7 @@ export class ClientsService {
             MATCH (c:Client) WHERE id(c) = toInteger($id_client)
             RETURN  c, 
                     c.name as name, 
-                    c.cpf as cpf, 
-                    c.adress as adess
+                    c.cpf as cpf 
         `, {
             id_client: idClient
         }).then(res => {
@@ -84,8 +76,7 @@ export class ClientsService {
                 return new Client(
                     row.get('c'),
                     row.get('name'),
-                    row.get('cpf'),
-                    row.get('adress')
+                    row.get('cpf')
                 )
             })
             return clients.length > 0 ? clients.map(a => a)
@@ -94,17 +85,15 @@ export class ClientsService {
     }
 
     async edit(idClient: number, client: UpdateClient): Promise<any> {
-        if ((await this.findById(idClient)).length > 0)
+        if (!((await this.findById(idClient)).length > 0))
             throw new NotFoundException('client not found')
-
 
         return await this.neo4jService.read(`
             MATCH (c:Client) WHERE id(c) = toInteger($id_client)
                 SET c.adress = $client_proper.adress
             RETURN  c, 
                     c.name as name, 
-                    c.cpf as cpf, 
-                    c.adress as adress
+                    c.cpf as cpf 
         `, {
             client_proper: client, id_client: idClient
         }).then(res => {
@@ -113,22 +102,20 @@ export class ClientsService {
                 new Client(
                     row.get('c'),
                     row.get('name'),
-                    row.get('cpf'),
-                    row.get('adress')
+                    row.get('cpf')
                 ) : new BadRequestException('error on edit client')
         })
     }
 
     async findSales(idClient: number) {
-        if ((await this.findById(idClient)).length > 0)
+        if (!((await this.findById(idClient)).length > 0))
             throw new NotFoundException('client not found')
 
 
         return await this.neo4jService.read(`
             MATCH (c:Client)<-[:FROM_CLIENT]-(s:Sale) WHERE id(c)=toInteger($id_client)
             RETURN  c.name as name, 
-                    c.cpf as cpf, 
-                    c.adress as adress,
+                    c.cpf as cpf,
                     s
         `, {
             id_client: idClient
@@ -137,8 +124,7 @@ export class ClientsService {
                 return new ClientSales(
                     row.get('s'),
                     row.get('name'),
-                    row.get('cpf'),
-                    row.get('adress')
+                    row.get('cpf')
                 )
             })
             return clientSales.length > 0 ? clientSales.map(a => a)
@@ -147,15 +133,14 @@ export class ClientsService {
     }
 
     async findProducts(idClient: number) {
-        if ((await this.findById(idClient)).length > 0)
+        if (!((await this.findById(idClient)).length > 0))
             throw new NotFoundException('client not found')
 
         return await this.neo4jService.read(`
             MATCH (c:Client) WHERE id(c)=toInteger($id_client)
             OPTIONAL MATCH (c)-[:HAS_SALE_PRODUCT]->(p:Product)
             RETURN  c.name as name, 
-                    c.cpf as cpf, 
-                    c.adress as adress, 
+                    c.cpf as cpf,  
                     p
         `, {
             id_client: idClient
@@ -164,8 +149,7 @@ export class ClientsService {
                 return new ClientProducts(
                     row.get('p'),
                     row.get('name'),
-                    row.get('cpf'),
-                    row.get('adress')
+                    row.get('cpf')
                 )
             })
             return clientSales.length > 0 ? clientSales.map(a => a)

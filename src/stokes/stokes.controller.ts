@@ -11,20 +11,20 @@ export class StokesController {
     ) { }
 
 
-    @Get('best_clients')
-    getBestClients() {
-        return this.serviceStoke.findBestClients()
+    @Get(':id/best_clients')
+    getBestClients(@Param('id') id: number) {
+        return this.serviceStoke.findBestClients(id)
     }
 
-    @Get('best_sellers')
-    getBestSellers() {
-        return this.serviceStoke.findBestSellers()
+    @Get(':id/best_sellers')
+    getBestSellers(@Param('id') id: number) {
+        return this.serviceStoke.findBestSellers(id)
     }
 
 
-    @Get('best_staffs')
-    getBestStaffs() {
-        return this.serviceStoke.findBestSellers()
+    @Get(':id/best_staffs')
+    getBestStaffs(@Param('id') id: number) {
+        return this.serviceStoke.findBestStaffs(id)
     }
 
     @Get()
