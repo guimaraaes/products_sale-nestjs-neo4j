@@ -32,13 +32,14 @@ API de gerenciamento de produtos, vendas e clientes em um estoque com NestJs e N
 - [x] Staff
   - [x] HAS_DONE_SALE
   - [x] WORKS_ON
+  - [ ] WORKED_ON
 - [x] City
   - [x] LOCALED_ON
   - [x] LIVES_ON
-
+  - [ ] LIVED_ON
   ### Api
-  - [ ] Autenticação com JWT
-  - [ ] Get melhores funcionários
+  - [x] Autenticação com JWT
+  - [x] Get melhores funcionários
   - [x] create de cities e stokes para uso por client e staff
 
 
