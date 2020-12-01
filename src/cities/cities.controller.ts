@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiOkResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { CityService } from './cities.service';
 
 @ApiTags('utils')
@@ -10,6 +10,9 @@ export class CityController {
     ) { }
 
     @Get()
+    @ApiOperation({ summary: 'get all cities' })
+    @ApiOkResponse({ description: 'cities found' })
+    @ApiNotFoundResponse({ description: 'no city found' })
     getAll() {
         return this.serviceCity.findAll()
     }

@@ -8,8 +8,8 @@ export class Product {
         private readonly quantity: number,
         private readonly quantity_disponible: number,
         private readonly price: number
-   
-    ) {}
+
+    ) { }
 
     toJson(): Record<string, any> {
         return {

@@ -24,8 +24,9 @@ export class CityService {
                     row.get('country')
                 )
             })
-            return cities.length > 0 ? cities.map(a => a)
-                : new NotFoundException('cities not found')
+            if (cities.length > 0)
+                return cities.map(a => a)
+            throw new NotFoundException('cities not found')
         })
     }
 }

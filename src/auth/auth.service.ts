@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, BadGatewayException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadGatewayException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt'
 import { JwtPayload } from './jwt-payload.interface';
 import { Credential, CreateStaff } from './dto/auth.dto'
@@ -19,7 +19,7 @@ export class AuthService {
         const { name, department, e_mail, password, city, stoke } = staff
 
         if (await this.findOne(e_mail))
-            return new BadGatewayException('email aready exist')
+            return new ForbiddenException('email aready exist')
 
         const user = new CreateStaff();
         user.name = name;
@@ -72,14 +72,15 @@ export class AuthService {
             city_proper: user.city,
         }).then(res => {
             const row = res.records[0]
-            return res.records.length > 0 ?
-                new Staff(
+            if (res.records.length > 0)
+                return new Staff(
                     row.get('st'),
                     row.get('name'),
                     row.get('department'),
                     row.get('e_mail'),
                     row.get('password')
-                ) : new BadGatewayException('error on create staff')
+                )
+            throw new BadRequestException('error on create staff')
         });
     }
 

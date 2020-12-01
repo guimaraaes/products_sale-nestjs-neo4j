@@ -41,8 +41,9 @@ export class SalesService {
 
                 )
             })
-            return sales.length > 0 ? sales.map(a => a)
-                : new NotFoundException('sales not found')
+            if (sales.length > 0)
+                return sales.map(a => a)
+            throw new NotFoundException('sales not found')
         })
     }
 
@@ -68,15 +69,15 @@ export class SalesService {
                     row.get('date')
                 )
             })
-            return sale.length > 0 ? sale.map(a => a)
-                : new NotFoundException('sale not found')
+            if (sale.length > 0)
+                return sale.map(a => a)
+            throw new NotFoundException('sale not found')
         })
 
     }
 
     async remove(idSale: number) {
-        if (!((await this.findById(idSale)).length > 0))
-            throw new NotFoundException('sale not found')
+        await this.findById(idSale)
 
         await this.neo4jService.write(`
             MATCH (s:Sale)-[:FROM_PRODUCT]->(p:Product),
@@ -105,17 +106,10 @@ export class SalesService {
     }
 
     async create(sale: CreateSale, idProduct: number, idClient: number, idStaff: number): Promise<any> {
-        if (!((await this.serviceProduct.findById(idProduct)).length > 0))
-            throw new NotFoundException('product not found')
-
-        if (!((await this.serviceProduct.findDisponibleById(idProduct)).length > 0))
-            throw new NotFoundException('product not disponible')
-
-        if (!((await this.serviceClient.findById(idClient)).length > 0))
-            throw new NotFoundException('client not found')
-
-        if (!((await this.serviceStaff.findById(idStaff)).length > 0))
-            throw new NotFoundException('staff not found')
+        await this.serviceProduct.findById(idProduct)
+        await this.serviceProduct.findDisponibleById(idProduct)
+        await this.serviceClient.findById(idClient)
+        await this.serviceStaff.findById(idStaff)
 
         return await this.neo4jService.write(`
             MATCH (p:Product) WHERE id(p) = toInteger($id_product)
@@ -176,17 +170,15 @@ export class SalesService {
             id_staff: idStaff
         }).then(res => {
             const row = res.records[0]
-            return res.records.length > 0 ?
-                new Sale(
+            if (res.records.length > 0)
+                return new Sale(
                     row.get('s'),
                     row.get('type_payment'),
                     row.get('quantity_parcels'),
                     row.get('total_sale'),
                     row.get('quantity_sale'),
-                    row.get('date')
-
-                ) : new BadRequestException('error on create sale')
+                    row.get('date'))
+            throw new BadRequestException('error on create sale')
         });
     }
-
 }

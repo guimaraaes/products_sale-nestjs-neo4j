@@ -4,6 +4,7 @@ import { Neo4jService } from 'nest-neo4j';
 import { Request } from 'express';
 import { Product } from './entity/products.entity';
 import { UpdateProduct, CreateProduct } from './dto/products.dto';
+import { throwError } from 'rxjs';
 
 @Injectable()
 export class ProductsService {
@@ -31,8 +32,9 @@ export class ProductsService {
                     row.get('price')
                 )
             })
-            return products.length > 0 ? products.map(a => a)
-                : new NotFoundException('product not found')
+            if (products.length > 0)
+                return products.map(a => a)
+            throw new NotFoundException('no product found')
         })
     }
 
@@ -54,13 +56,14 @@ export class ProductsService {
                     row.get('price')
                 )
             })
-            return products.length > 0 ? products.map(a => a)
-                : new NotFoundException('product not found')
+            if (products.length > 0)
+                return products.map(a => a)
+            throw new NotFoundException('no disponible product found')
+
         })
     }
 
     async findDisponibleById(idProduct: number): Promise<any> {
-        this.findById(idProduct)
         return await this.neo4jService.read(`
             MATCH (p:Product) WHERE p.quantity_disponible > 0 AND id(p) = toInteger($id_product)
             RETURN  p, 
@@ -80,8 +83,9 @@ export class ProductsService {
                     row.get('price')
                 )
             })
-            return product.length > 0 ? product.map(a => a)
-                : new NotFoundException('product not found')
+            if (res.records.length > 0)
+                return product.map(a => a)
+            throw new NotFoundException('product not found')
         })
 
     }
@@ -98,7 +102,7 @@ export class ProductsService {
         `, {
             id_product: idProduct
         }).then(res => {
-            const products = res.records.map(row => {
+            const product = res.records.map(row => {
                 return new Product(
                     row.get('p'),
                     row.get('name'),
@@ -107,14 +111,14 @@ export class ProductsService {
                     row.get('price')
                 )
             })
-            return products.length > 0 ? products.map(a => a)
-                : new NotFoundException('product not found')
+            if (res.records.length > 0)
+                return product.map(a => a)
+            throw new NotFoundException('product not found')
         })
     }
 
     async edit(idProduct: number, product: UpdateProduct) {
-        if (!((await this.findById(idProduct)).length > 0))
-            throw new NotFoundException('product not found')
+        await this.findById(idProduct)
 
         return await this.neo4jService.write(`
             MATCH (p:Product)
@@ -129,14 +133,14 @@ export class ProductsService {
             product_proper: product, id_product: idProduct
         }).then(res => {
             const row = res.records[0]
-            return res.records.length > 0 ?
-                new Product(
+            if (res.records.length > 0)
+                return new Product(
                     row.get('p'),
                     row.get('name'),
                     row.get('quantity'),
                     row.get('quantity_disponible'),
-                    row.get('price')
-                ) : new BadRequestException('error on update')
+                    row.get('price'))
+            throw new BadRequestException('error on update')
         });
     }
 
@@ -163,14 +167,14 @@ export class ProductsService {
             product_proper: product, id_stoke: id_stoke
         }).then(res => {
             const row = res.records[0]
-            return res.records.length > 0 ? (
-                new Product(
+            if (res.records.length > 0)
+                return new Product(
                     row.get('p'),
                     row.get('name'),
                     row.get('quantity'),
                     row.get('quantity_disponible'),
                     row.get('price'))
-            ) : new BadRequestException('error on create')
+            throw new BadRequestException('error on create')
         });
     }
 

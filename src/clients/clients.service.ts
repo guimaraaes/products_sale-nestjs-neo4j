@@ -23,8 +23,9 @@ export class ClientsService {
                     row.get('cpf')
                 )
             })
-            return clients.length > 0 ? clients.map(a => a)
-                : new NotFoundException('client not found')
+            if (clients.length > 0)
+                return clients.map(a => a)
+            throw new NotFoundException('no client found')
         })
     }
 
@@ -54,12 +55,12 @@ export class ClientsService {
             city_proper: client.adress
         }).then(res => {
             const row = res.records[0]
-            return res.records.length ?
-                new Client(
+            if (res.records.length > 0)
+                return new Client(
                     row.get('c'),
                     row.get('name'),
-                    row.get('cpf')
-                ) : new BadRequestException('error on create')
+                    row.get('cpf'))
+            throw new BadRequestException('error on create')
         });
     }
 
@@ -72,15 +73,16 @@ export class ClientsService {
         `, {
             id_client: idClient
         }).then(res => {
-            const clients = res.records.map(row => {
+            const client = res.records.map(row => {
                 return new Client(
                     row.get('c'),
                     row.get('name'),
                     row.get('cpf')
                 )
             })
-            return clients.length > 0 ? clients.map(a => a)
-                : new NotFoundException('client not found')
+            if (client.length > 0)
+                return client.map(a => a)
+            throw new NotFoundException('client not found')
         })
     }
 
@@ -98,19 +100,17 @@ export class ClientsService {
             client_proper: client, id_client: idClient
         }).then(res => {
             const row = res.records[0]
-            return res.records.length > 0 ?
-                new Client(
+            if (res.records.length > 0)
+                return new Client(
                     row.get('c'),
                     row.get('name'),
-                    row.get('cpf')
-                ) : new BadRequestException('error on edit client')
+                    row.get('cpf'))
+            throw new BadRequestException('error on edit client')
         })
     }
 
     async findSales(idClient: number) {
-        if (!((await this.findById(idClient)).length > 0))
-            throw new NotFoundException('client not found')
-
+        await this.findById(idClient)
 
         return await this.neo4jService.read(`
             MATCH (c:Client)<-[:FROM_CLIENT]-(s:Sale) WHERE id(c)=toInteger($id_client)
@@ -127,15 +127,14 @@ export class ClientsService {
                     row.get('cpf')
                 )
             })
-            return clientSales.length > 0 ? clientSales.map(a => a)
-                : new NotFoundException('no sale found')
+            if (clientSales.length > 0)
+                return clientSales.map(a => a)
+            throw new NotFoundException('no sale found')
         })
     }
 
     async findProducts(idClient: number) {
-        if (!((await this.findById(idClient)).length > 0))
-            throw new NotFoundException('client not found')
-
+        await this.findById(idClient)
         return await this.neo4jService.read(`
             MATCH (c:Client) WHERE id(c)=toInteger($id_client)
             OPTIONAL MATCH (c)-[:HAS_SALE_PRODUCT]->(p:Product)
@@ -145,15 +144,17 @@ export class ClientsService {
         `, {
             id_client: idClient
         }).then(res => {
-            const clientSales = res.records.map(row => {
+            const clientProducts = res.records.map(row => {
                 return new ClientProducts(
                     row.get('p'),
                     row.get('name'),
                     row.get('cpf')
                 )
             })
-            return clientSales.length > 0 ? clientSales.map(a => a)
-                : new NotFoundException('no product found')
+            if (clientProducts.length > 0)
+                return clientProducts.map(a => a)
+            throw new NotFoundException('no product found')
+
         })
     }
 }

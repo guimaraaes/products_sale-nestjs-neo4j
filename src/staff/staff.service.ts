@@ -25,8 +25,9 @@ export class StaffService {
                     row.get('password')
                 )
             })
-            return staffs.length > 0 ? staffs.map(a => a)
-                : new NotFoundException('staffs not found')
+            if (staffs.length > 0)
+                return staffs.map(a => a)
+            throw new NotFoundException('no staff found')
         })
 
     }
@@ -98,8 +99,9 @@ export class StaffService {
                     row.get('password')
                 )
             })
-            return staff.length > 0 ? staff.map(a => a)
-                : new NotFoundException('staff not found')
+            if (staff.length > 0)
+                return staff.map(a => a)
+            throw new NotFoundException('staff not found')
         })
     }
 }

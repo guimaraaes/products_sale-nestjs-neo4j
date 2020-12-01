@@ -23,8 +23,9 @@ export class StokesService {
                     row.get('sum_total_sale')
                 )
             })
-            return raking.length > 0 ? raking.map(a => a)
-                : new NotFoundException('raking best clients not found')
+            if (raking.length > 0)
+                return raking.map(a => a)
+            throw new NotFoundException('raking best clients not found')
         })
     }
 
@@ -42,8 +43,9 @@ export class StokesService {
                     row.get('sum_quantity_sale')
                 )
             })
-            return raking.length > 0 ? raking.map(a => a)
-                : new NotFoundException('raking best sellers not found')
+            if (raking.length > 0)
+                return raking.map(a => a)
+            throw new NotFoundException('raking best sellers not found')
         })
     }
 
@@ -80,8 +82,9 @@ export class StokesService {
                     row.get('adress')
                 )
             })
-            return stokes.length > 0 ? stokes.map(a => a)
-                : new NotFoundException('stokes not found')
+            if (stokes.length > 0)
+                return stokes.map(a => a)
+            throw new NotFoundException('stokes not found')
         })
     }
 }
